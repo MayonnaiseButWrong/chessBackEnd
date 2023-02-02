@@ -39,6 +39,52 @@ def generateQmoves():
     moves.append(direction)
     return moves
 
+def generateBMoves():
+    moves=[]
+    direction=[]
+    for i in range(10):
+        direction.append([i,i])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([i,-i])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([-i,-i])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([-i,i])
+    moves.append(direction)
+    return moves
+
+def generateRMoves():
+    moves=[]
+    direction=[]
+    for i in range(10):
+        direction.append([i,0])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([-i,0])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([0,i])
+    moves.append(direction)
+    direction=[]
+    for i in range(10):
+        direction.append([0,-i])
+    moves.append(direction)
+    return moves
+
+def generateKMoves():
+    return [[[1,0]],[[1,1]],[[0,1]],[[-1,1]],[[-1,0]],[[-1,-1]],[[0,-1]],[[0,-1]]]
+
+def generateNMoves():
+    return [[[2,1]],[[1,2]],[[-1,2]],[[-2,1]],[[-2,-1]],[[-1,-2]],[[1,-2]],[[2,-1]]]
+
 def makeMove(Layout,move):
     Layout[toTuple(move[1])[0]][toTuple(move[1])[1]]=Layout[toTuple(move[0])[0]][toTuple(move[0])[1]]
     if len(move)==3:
