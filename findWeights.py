@@ -1,5 +1,5 @@
 import translations
-import createBoardLayout
+import __all__ from createBoardLayout
 
 defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
 currentLayout=createBoardLayout(defaultLayout)
@@ -21,7 +21,56 @@ def generateMoves(piece):
 
 def enPassantMoves(boardLayout,i,j):
     threatening=[]
-    threatening
+    if boardLayout[j][i][0]=='W':
+        if j==3:
+            if i<6 and boardLayout[3][i+1]=='BP':
+                count=0
+                flag=False
+                temp=boardLayout
+                threatening.append([i+1,3])
+                while (i+count+1)<7 and (j-count)>1 and flag is False:
+                    flag=True
+                    count+=1
+                    if boardLayout[j-count][i+count+1]=='BP':
+                        threatening.append([i+count+1,j-count])
+                        temp[j-count][i+count+1]='MT'
+                if boardLayout[j-count-1][i+count+1][0]=='B':
+                    threatening.append([i+count+1,j-count-1])
+                if (j-count-1)<1:
+                    temp[j][i]='MT'
+                    temp[0][i+count+1]='WQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
+                    temp[0][i+count+1]='WR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
+                    temp[0][i+count+1]='WB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
+                    temp[0][i+count+1]='WN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
+            if i>0 and boardLayout[3][i-1]=='BP':
+                count=0
+                flag=False
+                temp=boardLayout
+                threatening.append([i-1,3])
+                while (i-count-1)>0 and (j-count)>1 and flag is False:
+                    flag=True
+                    count+=1
+                    if boardLayout[j-count][i-count-1]=='BP':
+                        threatening.append([i-count-1,j-count])
+                        temp[j-count][i-count-1]='MT'
+                if boardLayout[j-count-1][i-count-1][0]=='B':
+                    threatening.append([i-count-1,j-count-1])
+                if (j-count-1)<1:
+                    temp[j][i]='MT'
+                    temp[0][i-count-1]='WQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
+                    temp[0][i-count-1]='WR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
+                    temp[0][i-count-1]='WB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
+                    temp[0][i-count-1]='WN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
+    
+
 
 def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
     threatening=[]
@@ -30,78 +79,78 @@ def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
         if piece[0]=='W':
             if SpecificPiecePosition[0]<7 and boardLayout[SpecificPiecePosition[1]-1][SpecificPiecePosition[0]+1][0]=='B':
                 threatening.append([SpecificPiecePosition[0]+1,SpecificPiecePosition[1]-1])
-                if SpecificPiecePosition[1]==6:
+                if SpecificPiecePosition[1]==1:
                     temp=boardLayout
-                    temp[6][SpecificPiecePosition[0]]='MT'
-                    temp[7][SpecificPiecePosition[0]]='WQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
+                    temp[1][SpecificPiecePosition[0]]='MT'
+                    temp[0][SpecificPiecePosition[0]]='WQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
             if SpecificPiecePosition[0]>0 and boardLayout[SpecificPiecePosition[1]-1][SpecificPiecePosition[0]-1][0]=='B':
                 threatening.append([SpecificPiecePosition[0]-1,SpecificPiecePosition[1]-1])
+                if SpecificPiecePosition[1]==1:
+                    temp=boardLayout
+                    temp[1][SpecificPiecePosition[0]]='MT'
+                    temp[0][SpecificPiecePosition[0]]='WQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                    temp[0][SpecificPiecePosition[0]]='WN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+            if SpecificPiecePosition[1]==1:
+                temp=boardLayout
+                temp[1][SpecificPiecePosition[0]]='MT'
+                temp[0][SpecificPiecePosition[0]]='WQ'
+                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                temp[0][SpecificPiecePosition[0]]='WR'
+                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                temp[0][SpecificPiecePosition[0]]='WB'
+                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+                temp[0][SpecificPiecePosition[0]]='WN'
+                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],0])
+        else:
+            if SpecificPiecePosition[0]<7 and boardLayout[SpecificPiecePosition[1]+1][SpecificPiecePosition[0]+1][0]=='B':
+                threatening.append([SpecificPiecePosition[0]+1,SpecificPiecePosition[1]+1])
                 if SpecificPiecePosition[1]==6:
                     temp=boardLayout
                     temp[6][SpecificPiecePosition[0]]='MT'
-                    temp[7][SpecificPiecePosition[0]]='WQ'
+                    temp[7][SpecificPiecePosition[0]]='BQ'
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WR'
+                    temp[7][SpecificPiecePosition[0]]='BR'
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WB'
+                    temp[7][SpecificPiecePosition[0]]='BB'
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[7][SpecificPiecePosition[0]]='WN'
+                    temp[7][SpecificPiecePosition[0]]='BN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
+            if SpecificPiecePosition[0]>0 and boardLayout[SpecificPiecePosition[1]+1][SpecificPiecePosition[0]-1][0]=='B':
+                threatening.append([SpecificPiecePosition[0]-1,SpecificPiecePosition[1]+1])
+                if SpecificPiecePosition[1]==6:
+                    temp=boardLayout
+                    temp[6][SpecificPiecePosition[0]]='MT'
+                    temp[7][SpecificPiecePosition[0]]='BQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
+                    temp[7][SpecificPiecePosition[0]]='BR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
+                    temp[7][SpecificPiecePosition[0]]='BB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
+                    temp[7][SpecificPiecePosition[0]]='BN'
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
             if SpecificPiecePosition[1]==6:
                 temp=boardLayout
                 temp[6][SpecificPiecePosition[0]]='MT'
-                temp[7][SpecificPiecePosition[0]]='WQ'
+                temp[7][SpecificPiecePosition[0]]='BQ'
                 threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[7][SpecificPiecePosition[0]]='WR'
+                temp[7][SpecificPiecePosition[0]]='BR'
                 threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[7][SpecificPiecePosition[0]]='WB'
+                temp[7][SpecificPiecePosition[0]]='BB'
                 threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[7][SpecificPiecePosition[0]]='WN'
-                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-        else:
-            if SpecificPiecePosition[0]<7 and boardLayout[SpecificPiecePosition[1]+1][SpecificPiecePosition[0]+1][0]=='B':
-                threatening.append([SpecificPiecePosition[0]+1,SpecificPiecePosition[1]+1])
-                if SpecificPiecePosition[1]==1:
-                    temp=boardLayout
-                    temp[1][SpecificPiecePosition[0]]='MT'
-                    temp[0][SpecificPiecePosition[0]]='BQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-            if SpecificPiecePosition[0]>0 and boardLayout[SpecificPiecePosition[1]+1][SpecificPiecePosition[0]-1][0]=='B':
-                threatening.append([SpecificPiecePosition[0]-1,SpecificPiecePosition[1]+1])
-                if SpecificPiecePosition[1]==1:
-                    temp=boardLayout
-                    temp[1][SpecificPiecePosition[0]]='MT'
-                    temp[0][SpecificPiecePosition[0]]='BQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                    temp[0][SpecificPiecePosition[0]]='BN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-            if SpecificPiecePosition[1]==1:
-                temp=boardLayout
-                temp[1][SpecificPiecePosition[0]]='MT'
-                temp[0][SpecificPiecePosition[0]]='BQ'
-                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[0][SpecificPiecePosition[0]]='BR'
-                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[0][SpecificPiecePosition[0]]='BB'
-                threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
-                temp[0][SpecificPiecePosition[0]]='BN'
+                temp[7][SpecificPiecePosition[0]]='BN'
                 threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
                 
         threatening=threatening+enPassantMoves(boardLayout,SpecificPiecePosition[0],SpecificPiecePosition[1])
