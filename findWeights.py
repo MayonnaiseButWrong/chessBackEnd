@@ -3,18 +3,6 @@ from .createBoardLayout import *
 defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
 currentLayout=defaultLayout
 
-def generateMoves(piece):
-    if piece[0]=='Q':
-        return generateQMoves()
-    if piece[0]=='K':
-        return generateKMoves()
-    if piece[0]=='B':
-        return generateBMoves()
-    if piece[0]=='R':
-        return generateRMoves()
-    if piece[0]=='N':
-        return generateNMoves()
-
 def staticWeight(boardLayout,specificPiece):
     weights={
         'P':1,

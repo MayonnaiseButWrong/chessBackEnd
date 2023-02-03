@@ -103,6 +103,18 @@ def makeMove(Layout,move):
         Layout[toTuple(move[0])[1]][toTuple(move[0])[0]]='MT'
     return Layout
 
+def generateMoves(piece):
+    if piece[0]=='Q':
+        return generateQMoves()
+    if piece[0]=='K':
+        return generateKMoves()
+    if piece[0]=='B':
+        return generateBMoves()
+    if piece[0]=='R':
+        return generateRMoves()
+    if piece[0]=='N':
+        return generateNMoves()
+
 def createBoardLayout(layout,previosMovesList):
     for move in previosMovesList:
         layout=makeMove(layout,move)
