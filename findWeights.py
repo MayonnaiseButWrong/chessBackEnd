@@ -1,11 +1,7 @@
-import translations
-import __all__ from createBoardLayout
+from .createBoardLayout import *
 
 defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
-currentLayout=createBoardLayout(defaultLayout)
-
-def findWeights(boardLayout,specificPiece):
-    print('masdvobf ji')
+currentLayout=defaultLayout
 
 def generateMoves(piece):
     if piece[0]=='Q':
@@ -18,6 +14,18 @@ def generateMoves(piece):
         return generateRMoves()
     if piece[0]=='N':
         return generateNMoves()
+
+def staticWeight(boardLayout,specificPiece):
+    weights={
+        'P':1,
+        'N':3,
+        'B':3,
+        'R':5,
+        'Q':9,
+        'K':12
+    }
+    piece=boardLayout[specificPiece[1]][specificPiece[0]][1]
+    return weights[piece]
 
 def enPassantMoves(boardLayout,i,j):
     threatening=[]
@@ -69,7 +77,55 @@ def enPassantMoves(boardLayout,i,j):
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
                     temp[0][i-count-1]='WN'
                     threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
-    
+    else:
+        if j==4:
+            if i<6 and boardLayout[4][i+1]=='WP':
+                count=0
+                flag=False
+                temp=boardLayout
+                threatening.append([i+1,4])
+                while (i+count+1)<7 and (j+count)>1 and flag is False:
+                    flag=True
+                    count+=1
+                    if boardLayout[j+count][i+count+1]=='WP':
+                        threatening.append([i+count+1,j+count])
+                        temp[j+count][i+count+1]='MT'
+                if boardLayout[j+count+1][i+count+1][0]=='B':
+                    threatening.append([i+count+1,j+count+1])
+                if (j-count-1)<1:
+                    temp[j][i]='MT'
+                    temp[7][i+count+1]='BQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
+                    temp[7][i+count+1]='BR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
+                    temp[7][i+count+1]='BB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
+                    temp[7][i+count+1]='BN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
+            if i>0 and boardLayout[4][i-1]=='WP':
+                count=0
+                flag=False
+                temp=boardLayout
+                threatening.append([i-1,4])
+                while (i-count-1)>0 and (j+count)>1 and flag is False:
+                    flag=True
+                    count+=1
+                    if boardLayout[j-count][i-count-1]=='WP':
+                        threatening.append([i-count-1,j+count])
+                        temp[j+count][i-count-1]='MT'
+                if boardLayout[j+count+1][i-count-1][0]=='W':
+                    threatening.append([i-count-1,j+count+1])
+                if (j-count-1)<1:
+                    temp[j][i]='MT'
+                    temp[7][i-count-1]='BQ'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
+                    temp[7][i-count-1]='BR'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
+                    temp[7][i-count-1]='BB'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
+                    temp[7][i-count-1]='BN'
+                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
+    return threatening
 
 
 def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
@@ -165,13 +221,44 @@ def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
             flag=False
             for vector in direction:
                 if not boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]=='MT':
+                    if boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]== (boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]][0]+'K'):
+                        continue
                     if flag==False:
                         previosCheckedPiece=boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]
                         threatening.append([SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]])
+                        flag=True
                     elif (not previosCheckedPiece[0]==piece[0]) and (boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='K'or boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='Q'):
                         threatening.append([[SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]]])
-    #add enpassant
-    #add promotion
-    if boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]].name=='R':
-        threatening='hi'
+
+    if boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]]=='WR' and (SpecificPiecePosition==[0,7] or SpecificPiecePosition==[7,7]) and boardLayout[7][5]=='WK':
+        temp=boardLayout
+        temp[SpecificPiecePosition[1]][SpecificPiecePosition[0]]='MT'
+        if SpecificPiecePosition[0]>5:
+            temp[7][6]='WR'
+            threatening= threatening + whatPieceIsThisOneThreatening(temp, [6,7])
+        else:
+            temp[7][4]='WR'
+            threatening= threatening + whatPieceIsThisOneThreatening(temp, [4,7])
+    elif boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]]=='BR' and (SpecificPiecePosition==[0,0] or SpecificPiecePosition==[7,0]) and boardLayout[0][5]=='WK':
+        temp=boardLayout
+        temp[SpecificPiecePosition[1]][SpecificPiecePosition[0]]='MT'
+        if SpecificPiecePosition[0]>5:
+            temp[0][6]='BR'
+            threatening= threatening + whatPieceIsThisOneThreatening(temp, [6,0])
+        else:
+            temp[0][4]='BR'
+            threatening= threatening + whatPieceIsThisOneThreatening(temp, [4,0])
     return threatening
+
+
+def findWeights(boardLayout,specificPiece,weights):
+    weightofPiece=0
+    threatening=whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition)
+    if len(threatening)==0:
+        weights[specificPiece[1]][specificPiece[0]]=staticWeight(boardLayout,specificPiece)
+    for piece in threatening:
+        if weights[piece[1]][piece[0]]=='MT':
+            weights=findWeights(boardLayout, piece, weights)
+        weightofPiece+=weight[piece[1]][piece[0]]
+    weight[specificPiece[1]][specificPiece[0]]=weightofPiece
+    return weights
