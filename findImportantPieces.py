@@ -41,6 +41,6 @@ def findImportantPieces(boardLayout):
             bImportantPieces.append(sortedList[pieces])
             bCount+=1
         pieces+=1
-    return [wImportantPieces,bImportantPieces]
+    return wImportantPieces,bImportantPieces
             
                     
