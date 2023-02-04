@@ -103,7 +103,7 @@ def makeMove(Layout,move):
         Layout[toTuple(move[0])[1]][toTuple(move[0])[0]]='MT'
     return Layout
 
-def generateMoves(piece):
+def generateVectors(piece):
     if piece[0]=='Q':
         return generateQMoves()
     if piece[0]=='K':

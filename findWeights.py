@@ -204,7 +204,7 @@ def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
             if threatening[index-1]==threatening[index]:
                 del threatening[index]
     else:
-        moves=generateMoves(piece)
+        moves=generateVectors(piece)
         for direction in moves:
             flag=False
             for vector in direction:
