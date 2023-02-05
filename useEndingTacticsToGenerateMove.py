@@ -6,4 +6,4 @@ def useEndingTacticsToGenerateMove(boardLayout):
     #if its not found in either, gerate a move
     boardLayout=createBoardLayout(StartingLayout, listOfMoves)
     move=UseGenericTacticToGenerateMove(boardLayout, previosMovesList)
-    return move,True,2
+    return move

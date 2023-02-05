@@ -1,11 +1,3 @@
-def isintager(x):
-    try:
-        x=int(x)
-    except:
-        return False
-    else:
-        return True
-
 
 def to_xenonnumber(gamelist):
 
@@ -60,3 +52,4 @@ def toCoOrdinates(inputTuple):
 
 def toTuple(inputString):
     return [int(letters.index(InputCoOrdinates[0])),8-int(InputCoOrdinates[1])]
+

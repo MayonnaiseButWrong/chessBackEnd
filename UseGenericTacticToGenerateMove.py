@@ -44,7 +44,7 @@ def enPassantAllowed(previosMovesList,i):
 def useMidgameTacticToGenerateMove(boardLayout,previosMovesList):
     #check if the move is in the database
     #else
-        return UseGenericTacticToGenerateMove(boardLayout,previosMovesList),True,1
+        return UseGenericTacticToGenerateMove(boardLayout,previosMovesList)
 
 def UseGenericTacticToGenerateMove(boardLayout,previosMovesList):
     wImportantPieces1,bImportantPieces1=findImportantPieces(boardLayout)

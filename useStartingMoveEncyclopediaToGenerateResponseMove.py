@@ -13,4 +13,4 @@ def useStartingMoveEncyclopediaToGenerateResponseMove(listOfMoves,StartingLayout
     #if not in built in database
     boardLayout=createBoardLayout(StartingLayout, listOfMoves)
     move=UseGenericTacticToGenerateMove(boardLayout, previosMovesList)
-    return move,True,0  #return move, if its a new move, the method used to create the move
+    return move
