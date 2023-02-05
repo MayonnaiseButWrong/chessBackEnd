@@ -5,13 +5,13 @@ from .translations import *
 class move:
     def __init__(self,StartingLayout,listOfMoves):
         self.StartingLayout=to_gamelist(StartingLayout)
-        self.listOfMoves=listOfMoves
+        self.listOfMoves=stringToList(listOfMoves)
         self.responseMove=generateAMoveToReturnToThePlayer(self.listOfMoves, self.StartingLayout)
 
 class game:
     def __init__(self,StartingLayout,listOfMoves):
         self.StartingLayout=StartingLayout
-        self.listOfMoves=listOfMoves
+        self.listOfMoves=stringToList(listOfMoves)
     def DatabaseUpdate(self):
         if self.newmove==True:
             updateDatabase(self.StartingLayout,self.listOfMoves)

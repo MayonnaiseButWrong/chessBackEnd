@@ -348,7 +348,7 @@ def generateBoardLayout(move,boardLayout):
     if len(move)==2:
         boardLayout[move[1][0]][move[1][1]]=boardLayout[move[0][0]][move[0][1]]
         boardLayout[move[0][0]][move[0][1]]='MT'
-    elif move[2][0][0]=='W' or move[2][0][0]=='B':
+    elif move[2][0][1]=='B' or move[2][0][1]=='R' or move[2][0][1]=='Q' or move[2][0][1]=='N' :
         boardLayout[move[1][0]][move[1][1]]=move[2][0]
         boardLayout[move[0][0]][move[0][1]]='MT'
         if len(move[2])>1:

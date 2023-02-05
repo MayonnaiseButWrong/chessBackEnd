@@ -47,9 +47,62 @@ def to_gamelist(xenonnumber):
     return gamelist
 
 def toCoOrdinates(inputTuple):
-    letters=[A,B,C,D,E,F,G,H]
+    letters=['A','B','C','D','E','F','G','H']
     return letters[(inputTuple[0])]+str(8-inputTuple[1])
 
 def toTuple(inputString):
+    letters=['A','B','C','D','E','F','G','H']
     return [int(letters.index(InputCoOrdinates[0])),8-int(InputCoOrdinates[1])]
 
+def listToString(inputList):
+    outputList=[]
+    outputstr=''
+    chars=['A','B','C','D','E','F','G','H','K','Q','N','R','P','0','1','2','3','4','5','6','7',',']
+    for l in inputList:
+        s=l[0]+l[1]
+        if len(l)==3:
+            l2=l[2]
+            for count in range(len(l2)):
+                s+=l2[count]
+        outputList.append(s)
+        
+    for l in outputList:
+        for count in len(l):
+            i=chars.index(l[count])
+            if i<10:
+                i='0'+str(i)
+            else:
+                i=str(i)
+            outputstr+=i
+    return outputstr
+
+def stringToList(inputString):
+    chars=['A','B','C','D','E','F','G','H','K','Q','N','R','P','0','1','2','3','4','5','6','7',',']
+    outputstr=''
+    outputlist=[]
+    l=[]
+    flag=-1
+    s=''
+    for count in range(len(inputString)):
+        if not count%2:
+            index=inputString[count]
+            outputstr+=chars[index]
+    
+    for count in range(len(outputstr)):
+        if outputlist[count]==',':
+            for i in range(count-flag-1):
+                s+=outputlist[i+flag]
+                i.append(s)
+            flag=count
+    
+    outputlist=[]
+    for count in range(len(l)):
+            if len(l[count])==4:
+                outputlist.append([l[count][0]+l[count][1],l[count][2]+l[count][3]])
+            else:
+                tempList=[]
+                for i in range(5,len(l[count])):
+                    if not i%2==0:
+                        tempList.append(l[count][i-1]+l[count][i])
+                outputlist.append([l[count][0]+l[count][1],l[count][2]+l[count][3]],tempList)
+    return outputlist
