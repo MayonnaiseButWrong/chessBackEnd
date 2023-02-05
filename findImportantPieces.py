@@ -1,19 +1,19 @@
 from .findWeights import findWeights
 
-def bubbleSortPieces(pieces,weights):
+def bubbleSort(seconadaryList,baseList):
     flag=True
     while flag==True:
         flag=False
-        for count in range(1,len(weights)):
-            if weights[count-1]>weights[count]:
-                temp1=weights[count-1]
-                temp2=pieces[count-1]
-                weights[count-1]=weights[count]
-                pieces[count-1]=pieces[count]
-                weights[count]=temp1
-                pieces[count]=temp2
+        for count in range(1,len(baseList)):
+            if baseList[count-1]>baseList[count]:
+                temp1=baseList[count-1]
+                temp2=seconadaryList[count-1]
+                baseList[count-1]=baseList[count]
+                seconadaryList[count-1]=seconadaryList[count]
+                baseList[count]=temp1
+                seconadaryList[count]=temp2
                 flag=True
-    return pieces
+    return seconadaryList
 
 def findImportantPieces(boardLayout):
     weights=[['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT']]
@@ -29,7 +29,7 @@ def findImportantPieces(boardLayout):
                 if (not boardLayout[j][i]=='MT'):
                     listOfPieces.append([i,j])
                     listOfWeights.append(weights[j][i])
-    sortedList=bubbleSortPieces(listOfPieces,listOfWeights)
+    sortedList=bubbleSort(listOfPieces,listOfWeights)
     wImportantPieces=[]
     bImportantPieces=[]
     wCount,bCount,pieces=0,0,0

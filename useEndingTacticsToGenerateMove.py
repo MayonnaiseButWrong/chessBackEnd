@@ -1,5 +1,9 @@
+from .createBoardLayout import createBoardLayout
+
 def useEndingTacticsToGenerateMove(boardLayout):
-    print('egiwpjofsdvkcs')
-    #if there are 7 or less pieces left on the board, use the end gam table base at http://finalgenchess.ovh/home_ing.php
+    #if there are 7 or less pieces left on the board, use the end game table base at http://finalgenchess.ovh/home_ing.php
     #if its not found there use the normal database
     #if its not found in either, gerate a move
+    boardLayout=createBoardLayout(StartingLayout, listOfMoves)
+    move=UseGenericTacticToGenerateMove(boardLayout, previosMovesList)
+    return move,True,2
