@@ -264,11 +264,11 @@ def isCheckUsingVectors(kingI,kingJ,pieceI,pieceJ,boardLayout):
         else:
             modulus=vector[1]
         unitVector=[vector[0]/modulus,vector[1]/modulus]
-    for modulus in range(10):
-        if pieceI+modulus*unitVector[0]>=0 and pieceI+modulus*unitVector[0]<8 and pieceJ+modulus*unitVector[1]>=0 and pieceJ+modulus*unitVector[1]<8:
-            if not boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]==boardLayout[pieceJ][pieceJ]:
-                if not (boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]=='P' or boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]=='K'):
-                    return True
+        for modulus in range(10):
+            if pieceI+modulus*unitVector[0]>=0 and pieceI+modulus*unitVector[0]<8 and pieceJ+modulus*unitVector[1]>=0 and pieceJ+modulus*unitVector[1]<8:
+                if not boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]==boardLayout[pieceJ][pieceJ]:
+                    if not (boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]=='P' or boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]=='K'):
+                        return True
     return False
         
 def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
