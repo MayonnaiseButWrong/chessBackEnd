@@ -226,7 +226,7 @@ def pawnMoves(boardLayout,i,j):
     moves=moves+enPassantMoves(boardLayout,i,j)
     return moves
 
-def kingMoves(boardLayout,i,j,opponentMoves):
+def kingMoves(i,j,opponentMoves):
     moves=[]
     vectors=[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]
     for piece in opponentMoves:
@@ -290,7 +290,7 @@ def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
         if boardLayout[piece[1]][piece[0]][1]=='P':
             moves=moves+pawnMoves(boardLayout,piece[0],piece[1])
         elif boardLayout[piece[1]][piece[0]][1]=='K':
-            moves=moves+kingMoves(boardLayout,piece[0],piece[1],opponentMoves)
+            moves=moves+kingMoves(piece[0],piece[1],opponentMoves)
         elif boardLayout[piece[1]][piece[0]][1]=='R':
             moves=moves+castling(boardLayout,piece[0],piece[1],opponentMoves)
             for direction in vectors:
