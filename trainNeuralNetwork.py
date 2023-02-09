@@ -1,4 +1,5 @@
 from .createBoardLayout import createBoardLayout
+from stockfish import *
 
 def comparingProbabilities(boardLayout,depth):
     maxDepth=5
