@@ -1,4 +1,4 @@
-from .findWeights import findWeights
+from findWeights import findWeights
 
 def bubbleSort(seconadaryList,baseList):
     flag=True

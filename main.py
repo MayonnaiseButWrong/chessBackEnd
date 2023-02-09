@@ -1,6 +1,6 @@
 from generateAMoveToReturnToThePlayer import generateAMoveToReturnToThePlayer
-from updateDatabase import database
-from .translations import *
+from updateDatabase import updateDatabase
+from translations import *
 
 class move:
     def __init__(self,StartingLayout,listOfMoves):
@@ -13,8 +13,7 @@ class game:
         self.StartingLayout=StartingLayout
         self.listOfMoves=stringToList(listOfMoves)
     def DatabaseUpdate(self):
-        if self.newmove==True:
-            updateDatabase(self.StartingLayout,self.listOfMoves)
+        updateDatabase(self.StartingLayout,self.listOfMoves)
         
 #moveObject=move(StartingLayout,listOfMoves)
 #moveObject.returnMove()

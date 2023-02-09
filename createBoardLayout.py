@@ -1,4 +1,4 @@
-import translations
+from translations import *
 
 defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
 StartingLayout=defaultLayout
@@ -89,7 +89,7 @@ def makeMove(Layout,move):
     Layout[toTuple(move[1])[0]][toTuple(move[1])[1]]=Layout[toTuple(move[0])[0]][toTuple(move[0])[1]]
     if len(move)==3:
         if move[3][0][1]=='Q' or move[3][0][1]=='R'or move[3][0][1]=='N'or move[3][0][1]=='B':
-            Layout[toTuple(move[1])[1]][toTuple(move[1])[0]]=currentMove[3][0]
+            Layout[toTuple(move[1])[1]][toTuple(move[1])[0]]=move[3][0]
             Layout[toTuple(move[0])[1]][toTuple(move[0])[0]]='MT'
             for square in range(1,len(move[3])):
                 currentPosition=toTuple(move[3][square])
@@ -105,7 +105,7 @@ def makeMove(Layout,move):
 
 def generateVectors(piece):
     if piece[0]=='Q':
-        return generateQMoves()
+        return generateQmoves()
     if piece[0]=='K':
         return generateKMoves()
     if piece[0]=='B':

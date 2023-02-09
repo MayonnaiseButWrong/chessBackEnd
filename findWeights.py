@@ -1,4 +1,4 @@
-from .createBoardLayout import *
+from createBoardLayout import *
 
 defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
 currentLayout=defaultLayout
@@ -241,12 +241,12 @@ def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
 
 def findWeights(boardLayout,specificPiece,weights):
     weightofPiece=0
-    threatening=whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition)
+    threatening=whatPieceIsThisOneThreatening(boardLayout,specificPiece)
     if len(threatening)==0:
         weights[specificPiece[1]][specificPiece[0]]=staticWeight(boardLayout,specificPiece)
     for piece in threatening:
         if weights[piece[1]][piece[0]]=='MT':
-            weights=findWeights(boardLayout, piece, weights)
+            weight=findWeights(boardLayout, piece, weights)
         weightofPiece+=weight[piece[1]][piece[0]]
     weight[specificPiece[1]][specificPiece[0]]=weightofPiece
     return weights

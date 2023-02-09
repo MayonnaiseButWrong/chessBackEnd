@@ -1,8 +1,9 @@
-from .createBoardLayout import *
+from createBoardLayout import *
 
 def opponentMoves(boardLayout,importantPieces):
     moves=[]
     for piece in importantPieces:
+        vectors=generateVectors(boardLayout[piece[1]][piece[0]])
         if boardLayout[piece[1]][piece[0]][1]=='K':
             continue
         if boardLayout[piece[1]][piece[0]][1]=='P':
@@ -26,143 +27,31 @@ def enPassantMoves(boardLayout,i,j):
     if boardLayout[j][i][0]=='W':
         if j==3:
             if i<7 and boardLayout[3][i+1]=='BP':
-                temp=i
-                startSquare=[i,j]
-                i+=1
-                flag=False
+                startSquare=[i,3]
                 positionList=[]
-                tempList=[]
-                while i<7 and j>0 and flag==False:
-                    flag=True
-                    if boardLayout[j][i]=='BP':
-                        flag=False
-                        positionList.append([i,j])
-                    j-=1
-                    i+=1
-                endSquare=[i,j-1]
-                i=temp
-                if j==1:
-                    tempList.append('WQ')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WB')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WN')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WR')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                else:
-                    moves.append([startSquare,endSquare,positionList])
-            if i>0 and boardLayout[3][i+1]=='BP':
-                startSquare=[i,j]
-                temp=i
-                i-=1
-                flag=False
+                positionList.append([i+1,3])
+                endSquare = [i+1,2]
+                moves.append([startSquare,endSquare,positionList])
+            if i>0 and boardLayout[3][i-1]=='BP':
+                startSquare=[i,3]
                 positionList=[]
-                tempList=[]
-                while i<7 and j>0 and flag==False:
-                    flag=True
-                    if boardLayout[j][i]=='BP':
-                        flag=False
-                        positionList.append([i,j])
-                    j-=1
-                    i-=1
-                endSquare=[i,j-1]
-                i=temp
-                if j==1:
-                    tempList.append('WQ')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WB')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WN')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('WR')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                else:
-                    moves.append([startSquare,endSquare,positionList])
+                positionList.append([i-1,3])
+                endSquare = [i-1,2]
+                moves.append([startSquare,endSquare,positionList])
     else:
         if j==4:
-            if i<7 and boardLayout[3][i+1]=='WP':
-                temp=i
-                startSquare=[i,j]
-                i+=1
-                flag=False
+            if i<7 and boardLayout[4][i+1]=='WP':
+                startSquare=[i,4]
                 positionList=[]
-                tempList=[]
-                while i<7 and j<7 and flag==False:
-                    flag=True
-                    if boardLayout[j][i]=='WP':
-                        flag=False
-                        positionList.append([i,j])
-                    j+=1
-                    i+=1
-                endSquare=[i,j+1]
-                i=temp
-                if j==6:
-                    tempList.append('BQ')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BB')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BN')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BR')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                else:
-                    moves.append([startSquare,endSquare,positionList])
-            if i>0 and boardLayout[3][i+1]=='WP':
-                startSquare=[i,j]
-                temp=i
-                i-=1
-                flag=False
+                positionList.append([i+1,4])
+                endSquare = [i+1,5]
+                moves.append([startSquare,endSquare,positionList])
+            if i>0 and boardLayout[4][i-1]=='WP':
+                startSquare=[i,4]
                 positionList=[]
-                tempList=[]
-                while i<7 and j<7 and flag==False:
-                    flag=True
-                    if boardLayout[j][i]=='WP':
-                        flag=False
-                        positionList.append([i,j])
-                    j+=1
-                    i-=1
-                endSquare=[i,j-1]
-                i=temp
-                if j==1:
-                    tempList.append('BQ')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BB')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BN')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                    tempList=[]
-                    tempList.append('BR')
-                    tempList=tempList+positionList
-                    moves.append([startSquare,endSquare,tempList])
-                else:
-                    moves.append([startSquare,endSquare,positionList])
+                positionList.append([i-1,4])
+                endSquare = [i-1,5]
+                moves.append([startSquare,endSquare,positionList])
     return moves
 
 def castling(boardLayout,i,j,opponentMoves):

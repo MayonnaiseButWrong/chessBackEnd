@@ -1,6 +1,6 @@
-from .findImportantPieces import findImportantPieces
-from .generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
-from .ratingBasedOnNeuralNetwork import ratingBasedOnNeuralNetwork
+from findImportantPieces import findImportantPieces
+from generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
+from ratingBasedOnNeuralNetwork import ratingBasedOnNeuralNetwork
 
 def rateMoveBasedOnWinProbability(boardLayout,depth):
     p=0

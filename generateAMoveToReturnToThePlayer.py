@@ -1,7 +1,7 @@
-from .useStartingMoveEncyclopediaToGenerateResponseMove import useStartingMoveEncyclopediaToGenerateResponseMove
-from .useEndingTacticsToGenerateMove import useEndingTacticsToGenerateMove
-from .UseGenericTacticToGenerateMove import useMidgameTacticToGenerateMove
-from .createBoardLayout import createBoardLayout
+from useStartingMoveEncyclopediaToGenerateResponseMove import useStartingMoveEncyclopediaToGenerateResponseMove
+from useEndingTacticsToGenerateMove import useEndingTacticsToGenerateMove
+from UseGenericTacticToGenerateMove import useMidgameTacticToGenerateMove
+from createBoardLayout import createBoardLayout
 
 def generateAMoveToReturnToThePlayer(listOfMoves,StartingLayout):
     if len(listOfMoves)<18:
@@ -16,4 +16,4 @@ def generateAMoveToReturnToThePlayer(listOfMoves,StartingLayout):
         if count<=7:
             return useEndingTacticsToGenerateMove(boardLayout)
         else:
-            return useMidgameTacticToGenerateMove(boardLayout, previosMovesList)
+            return useMidgameTacticToGenerateMove(boardLayout, listOfMoves)
