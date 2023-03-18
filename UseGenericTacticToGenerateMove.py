@@ -51,7 +51,8 @@ def UseGenericTacticToGenerateMove(boardLayout,previosMovesList):
     moves=generateMovesUsingImportantPieces(boardLayout, bImportantPieces1, wImportantPieces1)
     pValues=[]
     for move in moves:
-        pValues.append(rateMoveBasedOnWinProbability(move,0))
+        p,q=rateMoveBasedOnWinProbability(move,0)
+        pValues.append(p*100000/q)
     moves=bubbleSort(moves,pValues)
     flag=True
     count=0
@@ -68,5 +69,5 @@ def UseGenericTacticToGenerateMove(boardLayout,previosMovesList):
             else:
                 count+=1
         else:
-            return move[count], True
+            return move[count]
                 

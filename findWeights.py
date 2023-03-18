@@ -19,100 +19,16 @@ def enPassantMoves(boardLayout,i,j):
     threatening=[]
     if boardLayout[j][i][0]=='W':
         if j==3:
-            if i<6 and boardLayout[3][i+1]=='BP':
-                count=0
-                flag=False
-                temp=boardLayout
+            if i<7 and boardLayout[3][i+1]=='BP':
                 threatening.append([i+1,3])
-                while (i+count+1)<7 and (j-count)>1 and flag is False:
-                    flag=True
-                    count+=1
-                    if boardLayout[j-count][i+count+1]=='BP':
-                        threatening.append([i+count+1,j-count])
-                        temp[j-count][i+count+1]='MT'
-                if boardLayout[j-count-1][i+count+1][0]=='B':
-                    threatening.append([i+count+1,j-count-1])
-                if (j-count-1)<1:
-                    temp[j][i]='MT'
-                    temp[0][i+count+1]='WQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
-                    temp[0][i+count+1]='WR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
-                    temp[0][i+count+1]='WB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
-                    temp[0][i+count+1]='WN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,0])
             if i>0 and boardLayout[3][i-1]=='BP':
-                count=0
-                flag=False
-                temp=boardLayout
                 threatening.append([i-1,3])
-                while (i-count-1)>0 and (j-count)>1 and flag is False:
-                    flag=True
-                    count+=1
-                    if boardLayout[j-count][i-count-1]=='BP':
-                        threatening.append([i-count-1,j-count])
-                        temp[j-count][i-count-1]='MT'
-                if boardLayout[j-count-1][i-count-1][0]=='B':
-                    threatening.append([i-count-1,j-count-1])
-                if (j-count-1)<1:
-                    temp[j][i]='MT'
-                    temp[0][i-count-1]='WQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
-                    temp[0][i-count-1]='WR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
-                    temp[0][i-count-1]='WB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
-                    temp[0][i-count-1]='WN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,0])
     else:
         if j==4:
             if i<6 and boardLayout[4][i+1]=='WP':
-                count=0
-                flag=False
-                temp=boardLayout
                 threatening.append([i+1,4])
-                while (i+count+1)<7 and (j+count)>1 and flag is False:
-                    flag=True
-                    count+=1
-                    if boardLayout[j+count][i+count+1]=='WP':
-                        threatening.append([i+count+1,j+count])
-                        temp[j+count][i+count+1]='MT'
-                if boardLayout[j+count+1][i+count+1][0]=='B':
-                    threatening.append([i+count+1,j+count+1])
-                if (j-count-1)<1:
-                    temp[j][i]='MT'
-                    temp[7][i+count+1]='BQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
-                    temp[7][i+count+1]='BR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
-                    temp[7][i+count+1]='BB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
-                    temp[7][i+count+1]='BN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i+count+1,7])
             if i>0 and boardLayout[4][i-1]=='WP':
-                count=0
-                flag=False
-                temp=boardLayout
                 threatening.append([i-1,4])
-                while (i-count-1)>0 and (j+count)>1 and flag is False:
-                    flag=True
-                    count+=1
-                    if boardLayout[j-count][i-count-1]=='WP':
-                        threatening.append([i-count-1,j+count])
-                        temp[j+count][i-count-1]='MT'
-                if boardLayout[j+count+1][i-count-1][0]=='W':
-                    threatening.append([i-count-1,j+count+1])
-                if (j-count-1)<1:
-                    temp[j][i]='MT'
-                    temp[7][i-count-1]='BQ'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
-                    temp[7][i-count-1]='BR'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
-                    temp[7][i-count-1]='BB'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
-                    temp[7][i-count-1]='BN'
-                    threatening=threatening+whatPieceIsThisOneThreatening(temp,[i-count-1,7])
     return threatening
 
 
