@@ -1,19 +1,22 @@
+import time
 from numpy import exp, array, random, asmatrix, matmul, add
 
 class NeuralNetwork():
     def __init__(self,layers):
-        fweights=open("Weights.txt","w+")
-        fbaises=open("Baises.txt","w+")
+        fweights=open("Weights.txt","rt")
+        fbaises=open("Baises.txt","rt")
         self.layers=layers
         if len(str(fweights.read()))<1 or len(str(fbaises.read()))<1:
-            self.weights=self.__createFile(fweights)
-            self.baises=self.__createFile(fbaises)
+            self.weights=self.__createFileW(open("Weights.txt","wt"))
+            self.baises=self.__createFileB(open("Baises.txt","wt"))
+            print('here')
         else:
-            self.weights=self.__fileDecomposition(fweights)
-            self.baises=self.__fileDecomposition(fbaises)
+            self.weights=self.__fileDecomposition(open("Weights.txt","rt"))
+            self.baises=self.__fileDecomposition(open("Baises.txt","rt"))
+            print('there')
         self.training_examples=[]
         
-    def __createFile(self,f):
+    def __createFileW(self,f):
         out,arrays,array='',[],[]
         for i in range(len(self.layers)-1):
             layer1=self.layers[i]
@@ -22,12 +25,27 @@ class NeuralNetwork():
                 array.append([])
                 for k in range(layer1-1):
                     out+='1.0,'
-                    array[-1].append(1)
+                    array[-1].append(1.0)
                 out+='1.0;'
+                array[-1].append(1.0)
             for k in range(layer1-1):
                     out+='1.0,'
-                    array[-1].append(1)
+                    array[-1].append(1.0)
             out+='1.0$'
+            array[-1].append(1.0)
+            arrays.append(array)
+        f.write(out)
+        return arrays
+    
+    def __createFileB(self,f):
+        out,arrays,array='',[],[]
+        for i in range(len(self.layers)-1):
+            layer=self.layers[i+1]
+            for j in range(layer-1):
+                array.append([1.0])
+                out+='1.0;'
+            out+='1.0$'
+            array.append([1.0])
             arrays.append(array)
         f.write(out)
         return arrays
@@ -47,18 +65,19 @@ class NeuralNetwork():
         f.write(out)
     
     def __UpdateWeightsAndBaises(self,weightchange,baischange):
-        self.__UpdateFiles(open("Weights.txt","w+"),weightchange)
-        self.__UpdateFiles(open("Baises.txt","w+"),baischange)
+        self.__UpdateFiles(open("Weights.txt","wt"),weightchange)
+        self.__UpdateFiles(open("Baises.txt","wt"),baischange)
         
     def __fileDecomposition(self, f):
         text=str(f.read())
-        word,array,col,out=text[0],[],0,[]
-        for count in range(len(text)):
+        word,array,col,out=text[0],[[]],0,[]
+        for count in range(1,len(text)):
             if text[count]==',':
                 array[col].append(float(word))
+                word=''
             elif text[count]==';':
                 array[col].append(float(word))
-                col+=1
+                col,word=col+1,''
                 array.append([])
             elif text[count]=='$':
                 out.append(array)
@@ -200,4 +219,7 @@ class NeuralNetwork():
 
 
 if __name__ =="__main__":
+    start_time = time.time()
     NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
+    print('done')
+    print("--- %s seconds ---" % (time.time() - start_time))
