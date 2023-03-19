@@ -6,16 +6,16 @@ class NeuralNetwork():
         fbaises=open("Baises.txt","w+")
         self.layers=layers
         if len(str(fweights.read()))<1 or len(str(fbaises.read()))<1:
-            self.weights=__createFile(fweights)
-            self.baises=__createFile(fbaises)
+            self.weights=self.__createFile(fweights)
+            self.baises=self.__createFile(fbaises)
         else:
-            self.weights=__fileDecomposition(fweights)
-            self.baises=__fileDecomposition(fbaises)
+            self.weights=self.__fileDecomposition(fweights)
+            self.baises=self.__fileDecomposition(fbaises)
         self.training_examples=[]
         
     def __createFile(self,f):
         out,arrays,array='',[],[]
-        for i in range(len(layers)-1):
+        for i in range(len(self.layers)-1):
             layer1=self.layers[i]
             layer2=self.layers[i+1]
             for j in range(layer2-1):
@@ -197,4 +197,7 @@ class NeuralNetwork():
             self.baises=self.__matrixmeld(baischanges, self.__findAverage(baischanges))
             self.__UpdateWeightsAndBaises(self.weights,self.baises)
             #translate the stockfish thing into something the nnue can understand
-    
+
+
+if __name__ =="__main__":
+    NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
