@@ -1,5 +1,10 @@
 from createBoardLayout import createBoardLayout
-from stockfish import *
+from stockfish import Stockfish
+from translations import *
+from ratingBasedOnNeuralNetwork import NNUE
+
+#finding a way to constantly generate a dataset was out of the scope of this project, so i am just assuming that whatever stockish says is the best possible move and using that to train my own NNUE
+stockfish=Stockfish(path='/stockfish',depth=10, parameters={"Threads": 2, "Minimum Thinking Time":10,"UCI_Chess960": "false","UCI_LimitStrength": "false","UCI_Elo": 3000, "Hash": 2048})
 
 def comparingProbabilities(boardLayout,depth):
     maxDepth=5
@@ -16,14 +21,16 @@ def comparingProbabilities(boardLayout,depth):
                 checkMoves=generateMovesUsingImportantPieces(bmove, wImportantPieces3, bImportantPieces3)
                 if len(checkMoves)>0 is True:
                     continue
-                elif depth<maxDepth:
+                if depth<maxDepth:
                     depth+=1
                     rateMoveBasedOnWinProbability(bmove, depth)
                 else:
-                    p=ratingBasedOnNeuralNetwork(bmove)
-                    #find p from stockfish
-                    #calculate cost
-                    #train neural network
+                    stockfish.set_fen_position(toFEN(bmove)+' b')
+                    eval=stockfish.get_evaluation()
+                    NNUE.train([bmove,eval])
+                    
+                    
+                    
 
 def trainNeuralNetwork(StartingLayout,listOfMoves):
     for count in range(listOfMoves):

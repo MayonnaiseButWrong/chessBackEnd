@@ -127,7 +127,7 @@ class NeuralNetwork():
         return out
     
     def __testevaluate(self, ins):
-        m1,out=ins,[]
+        m1,out=__encode(ins),[]
         for i in range(len(self.weights)):
             m2 = self.__matrixmul(m1,self.weights[i])
             m3 = self.__matrixadd(m2,self.baises[i])
@@ -138,6 +138,23 @@ class NeuralNetwork():
     def evaluate(self, ins):
         l=self.__testevaluate(ins)
         out=l[-1]
+        return self.__decode(out)
+    
+    def __encode(self,ins):
+        out,piecedict=[],{'MT':[0,0,0,0],'WP':[0,0,0,1],'BP':[0,0,1,0],'WB':[0,0,1,1],'BB':[0,1,0,0],'WN':[0,1,0,1],'BN':[0,1,1,0],'WR':[0,1,1,1],'BR':[1,0,0,0],'WQ':[1,0,0,1],'BQ':[1,0,1,0],'WK':[1,1,0,1],'BK':[1,1,1,0]}
+        for j in range(8):
+            for i in range(8):
+                out=piecedict[ins[j][i]]+out
+        return out
+    
+    def __decode(self,ins):
+        m=''
+        for a in ins:
+            m1+=str(a[0])
+        exponent,mantissa=int(bin(m[0,3])),float(bin(m[4,-1])*(2^(-5)))
+        out=mantissa^exponent
+        if out>1.0:out=1.0
+        elif out<0.001:out=0
         return out
     
     def __backprop(self,listofweights,listofbaises,activations,example):
@@ -176,5 +193,8 @@ class NeuralNetwork():
                 weightchange,baischange=__backprop(self.weights,self.baises,example[0]+activations,example[1])
                 weightchanges.append(weightchange)
                 baischanges.append(baischange)
-            self.__UpdateWeightsAndBaises(self.__findAverage(weightchanges),self.__findAverage(baischanges))
+            self.weights=self.__matrixmeld(weightchange,self.__findAverage(weightchanges))
+            self.baises=self.__matrixmeld(baischanges, self.__findAverage(baischanges))
+            self.__UpdateWeightsAndBaises(self.weights,self.baises)
+            #translate the stockfish thing into something the nnue can understand
     

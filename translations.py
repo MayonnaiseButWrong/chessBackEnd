@@ -106,3 +106,17 @@ def stringToList(inputString):
                         tempList.append(l[count][i-1]+l[count][i])
                 outputlist.append([l[count][0]+l[count][1],l[count][2]+l[count][3]],tempList)
     return outputlist
+
+def toFEN(ins):
+    out=''
+    for j in range(8):
+        for i in range(8):
+            count=0
+            while count+1<8 and ins[j][i+count]=='MT': count+=1
+            if ins[j][i][0]=='B':out+=ins[j][i][1].lower()
+            elif ins[j][i][0]=='W':out+=ins[j][i][1]
+            if count>0:
+                i+=(count-1)
+                out+=count
+        out+='/'
+    return out[0,-1]
