@@ -4,7 +4,7 @@ from translations import *
 from ratingBasedOnNeuralNetwork import NNUE
 
 #finding a way to constantly generate a dataset was out of the scope of this project, so i am just assuming that whatever stockish says is the best possible move and using that to train my own NNUE
-stockfish=Stockfish()
+#stockfish=Stockfish('stockfish.exe')
 
 
 def tobinary(ins):
@@ -14,15 +14,19 @@ def tobinary(ins):
             ins=ins*2
             out.append(0)
         out.append(1)
-        for i in range(4):
+        for i in range(5):
             if ins>1: 
                 out.append(1)
                 ins-=1
             else: out.append(0)
+        return out[1:-1]
     else:
         while ins>=1:
             out.append(ins%2)
-    return out
+            ins=ins//2
+        while len(out)<4:
+            out.append(0)
+        return out[::-1]
 
 def twoscompliment(ins):
     ins=tobinary(ins)
@@ -39,29 +43,34 @@ def twoscompliment(ins):
     return out
         
 def tomantissa(ins):
-    print(ins)
     ins=tobinary(ins)
     if len(ins)>6:
-        exponent=len(ins)-5
+        exponent=len(ins)-6
         if exponent>14:
             exponent=twoscompliment(exponent)
-            return exponent+ins[-6,-1]
+            return exponent+ins[-6:-1]
+        else:
+            exponent=tobinary(exponent)
+            return exponent+ins[-6:-1]
     else:
         return [0,0,0,0]+ins
     #fix this pls
     
 def format(ins,n):
-    if ins>0:
-        return tomantissa((float(n+int(ins))/n))
+    out=[]
+    if ins<0:
+        a=tomantissa((float(n+int(ins))/n))
     else:
-        tomantissa(float(int(ins)/n))
+        a=tomantissa(float(int(ins)/n))
+    for b in a:
+        out.append([b])
+    return out
         
 def numberofpoints(ins):
     points,t={'B':3,'N':3,'Q':9,'K':0,'R':4,'P':1,'T':0},0
     for j in range(8):
         for i in range(8):
             t+=points[ins[j][i][1]]
-    print(t)
     return t
 
 def comparingProbabilities(boardLayout,depth):
@@ -99,10 +108,14 @@ def trainNeuralNetwork(StartingLayout,listOfMoves):
 
 if __name__=="__main__":
     defaultLayout=[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']]
-    isvalid=stockfish.is_fen_valid(toFEN(defaultLayout) + ' b - - 0 1')
-    if isvalid is True:
-        stockfish.set_fen_position(toFEN(defaultLayout) + ' b - - 0 1')
-        eval=stockfish.get_evaluation()
-        print(eval)
-        eval=format(eval['value'],numberofpoints(defaultLayout))
-        print(eval)
+    #isvalid=stockfish.is_fen_valid(toFEN(defaultLayout) + ' b - - 0 1')
+    #if isvalid is True:
+        #stockfish.set_fen_position(toFEN(defaultLayout) + ' b - - 0 1')
+        #eval=stockfish.get_evaluation()
+        #print(eval)
+        #eval=format(eval['value'],numberofpoints(defaultLayout))
+        #print(eval)
+    eval=format(2,numberofpoints(defaultLayout))
+    print(eval)
+    NNUE.train([defaultLayout,eval])
+    print('here')

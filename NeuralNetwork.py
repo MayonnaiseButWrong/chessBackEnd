@@ -129,6 +129,10 @@ class NeuralNetwork():
                 out[j].append(ins1[j][i]*ins2[j][i])
         return out
     
+    def __matrixtranspose(self,ins):
+        m=numpy.asmatrix(ins)
+        return numpy.matrix.getA(numpy.matrix.transpose(m))
+    
     def __reduce(self,ins):
         out=self.__matrixadd(ins[0],ins[1])
         for i in range(2,len(ins)):
@@ -209,21 +213,24 @@ class NeuralNetwork():
         return out
     
     def __backprop(self,listofweights,listofbaises,activations,example):
-        weights,baises,activation,activationchanges,activationchange,nextLayerExample,temp=listofweights[-1],listofbaises[-1],activations[-1],[],[],[],0
+        weights,baises,activation,activationchanges,activationchange,nextLayerExample,temp=self.__matrixtranspose(listofweights[-1]),listofbaises[-1],activations[-1],[],[],[],0
         for number in example[0]:
-            error=(activation[i][0]-number)/activation[i][0]
             for j in range(len(weights)):
-                for i in range(len(weights[i])):
-                    temp+=error*self.__sigmoid_derivative(number)-baises[i][0]*weights[j][i]
+                for i in range(len(weights[j])):
+                    #print(len(activation),len(weights[j]),len(weights),i)
+                    error=(activation[i][0]-number)/activation[i][0]
+                    temp+=error*self.__sigmoid_derivative(number)*weights[j][i]
                 activationchange.append([temp])
+            print('here')
             activationchanges.append(activationchange)
             if len(nextLayerExample)>0:
                 nextLayerExample=self.__matrixadd(nextLayerExample,activationchange)
             else:
                 nextLayerExample=activationchanges
                 
+        print(len(activation[-2][0]),len(activation[-2]))
         if len(activations)>2:
-            weightchanges,baischanges=__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],__matrixmul(activation[-2],nextLayerExample)+example)
+            weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activation[-2],nextLayerExample)+example)
             #weightchange,baischange=weightchanges[-1],baischanges[-1]
         else:
             weightchanges,baischanges=[],[]
@@ -236,11 +243,11 @@ class NeuralNetwork():
             
     def train(self,data):
         self.training_examples.append(data)
-        if len(self.training_examples)>=50:
+        if len(self.training_examples)>=1:
             weightchanges,baischanges=[],[]
             for example in self.training_examples:
-                activations=__testevaluate(example[0])
-                weightchange,baischange=__backprop(self.weights,self.baises,example[0]+activations,example[1])
+                activations=self.__testevaluate(example[0])
+                weightchange,baischange=self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
                 weightchanges.append(weightchange)
                 baischanges.append(baischange)
             self.weights=self.__matrixmeld(weightchange,self.__findAverage(weightchanges))
@@ -249,10 +256,10 @@ class NeuralNetwork():
             #translate the stockfish thing into something the nnue can understand
 
 
-#if __name__ =="__main__":
-#    start_time = time.time()
-#    NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
-#    out=NNUE.evaluate([['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']])
-#    print(out)
-#    print('done')
-#    print("--- %s seconds ---" % (time.time() - start_time))
+if __name__ =="__main__":
+    start_time = time.time()
+    NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
+    out=NNUE.evaluate([['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']])
+    print(out)
+    print('done')
+    print("--- %s seconds ---" % (time.time() - start_time))
