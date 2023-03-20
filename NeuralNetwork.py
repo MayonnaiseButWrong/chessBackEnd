@@ -1,4 +1,5 @@
 import time
+import numpy
 from numpy import exp, array, random, asmatrix, matmul, add
 
 class NeuralNetwork():
@@ -28,12 +29,15 @@ class NeuralNetwork():
                     array[-1].append(1.0)
                 out+='1.0;'
                 array[-1].append(1.0)
+            array.append([])
             for k in range(layer1-1):
                     out+='1.0,'
                     array[-1].append(1.0)
             out+='1.0$'
             array[-1].append(1.0)
+            print(len(array))
             arrays.append(array)
+            array=[]
         f.write(out)
         return arrays
     
@@ -70,17 +74,20 @@ class NeuralNetwork():
         
     def __fileDecomposition(self, f):
         text=str(f.read())
-        word,array,col,out=text[0],[[]],0,[]
+        word,array,out=text[0],[[]],[]
         for count in range(1,len(text)):
             if text[count]==',':
-                array[col].append(float(word))
+                array[-1].append(float(word))
                 word=''
             elif text[count]==';':
-                array[col].append(float(word))
-                col,word=col+1,''
+                array[-1].append(float(word))
+                word=''
                 array.append([])
             elif text[count]=='$':
+                array[-1].append(float(word))
+                word=''
                 out.append(array)
+                array=[[]]
             else:
                 word+=text[count]
         return out
@@ -102,11 +109,11 @@ class NeuralNetwork():
     
     def __matrixmul(self,ins1,ins2):
         m1,m2=numpy.asmatrix(ins1),numpy.asmatrix(ins2)
-        return numpy.getA(numpy.matmul(m1,m2))
+        return numpy.matrix.getA(numpy.matmul(m1,m2))
     
     def __matrixadd(self,ins1,ins2):
         m1,m2=numpy.asmatrix(ins1),numpy.asmatrix(ins2)
-        return numpy.getA(numpy.add(m1,m2))
+        return numpy.matrix.getA(numpy.add(m1,m2))
     
     def __matrixsub(self,ins1,ins2):
         for j in range(len(ins2)):
@@ -146,9 +153,9 @@ class NeuralNetwork():
         return out
     
     def __testevaluate(self, ins):
-        m1,out=__encode(ins),[]
+        m1,out=self.__encode(ins),[]
         for i in range(len(self.weights)):
-            m2 = self.__matrixmul(m1,self.weights[i])
+            m2 = self.__matrixmul(self.weights[i],m1)
             m3 = self.__matrixadd(m2,self.baises[i])
             m1 = self.__applySigmoid(m3)
             out.append(m1)
@@ -160,7 +167,7 @@ class NeuralNetwork():
         return self.__decode(out)
     
     def __encode(self,ins):
-        out,piecedict=[],{'MT':[0,0,0,0],'WP':[0,0,0,1],'BP':[0,0,1,0],'WB':[0,0,1,1],'BB':[0,1,0,0],'WN':[0,1,0,1],'BN':[0,1,1,0],'WR':[0,1,1,1],'BR':[1,0,0,0],'WQ':[1,0,0,1],'BQ':[1,0,1,0],'WK':[1,1,0,1],'BK':[1,1,1,0]}
+        out,piecedict=[],{'MT':[[0],[0],[0],[0]],'WP':[[0],[0],[0],[1]],'BP':[[0],[0],[1],[0]],'WB':[[0],[0],[1],[1]],'BB':[[0],[1],[0],[0]],'WN':[[0],[1],[0],[1]],'BN':[[0],[1],[1],[0]],'WR':[[0],[1],[1],[1]],'BR':[[1],[0],[0],[0]],'WQ':[[1],[0],[0],[1]],'BQ':[[1],[0],[1],[0]],'WK':[[1],[1],[0],[1]],'BK':[[1],[1],[1],[0]]}
         for j in range(8):
             for i in range(8):
                 out=piecedict[ins[j][i]]+out
@@ -169,11 +176,36 @@ class NeuralNetwork():
     def __decode(self,ins):
         m=''
         for a in ins:
-            m1+=str(a[0])
-        exponent,mantissa=int(bin(m[0,3])),float(bin(m[4,-1])*(2^(-5)))
-        out=mantissa^exponent
+            m+=str(int(round(a[0])))
+        if m[0]=='1':exponent=-(int(self.__bintoint(self.__twoscompliment(m[0:4]))))
+        else:exponent=int(self.__bintoint(m[0:4]))
+        mantissa=float(self.__bintoint(m[3:-1]))*0.03125
+        out=mantissa*(2**exponent)
         if out>1.0:out=1.0
         elif out<0.001:out=0
+        return out
+    
+    def __bintoint(self,ins):
+        out,ins=0,ins[::-1]
+        for i in range(len(ins)):
+            x=1
+            if ins[i]=='1':
+                for a in range(i):
+                    x*=2
+                out+=(x)
+        return out
+    
+    def __twoscompliment(self,ins):
+        flag,out=False,''
+        for n in range(len(ins)):
+            if n>len(ins):n=0
+            if ins[-n]=='1' and flag==False:
+                out='1'+out
+                flag=True
+            elif ins[-n]=='1':
+                out='0'+out
+            else:
+                out='1'+out
         return out
     
     def __backprop(self,listofweights,listofbaises,activations,example):
@@ -200,8 +232,7 @@ class NeuralNetwork():
         baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activation[-2]),activation[-1])
         weightchanges.append(weightchange)
         baischanges.append(baischange)
-        return weightchanges,baischanges
-            
+        return weightchanges,baischanges      
             
     def train(self,data):
         self.training_examples.append(data)
@@ -218,8 +249,10 @@ class NeuralNetwork():
             #translate the stockfish thing into something the nnue can understand
 
 
-if __name__ =="__main__":
-    start_time = time.time()
-    NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
-    print('done')
-    print("--- %s seconds ---" % (time.time() - start_time))
+#if __name__ =="__main__":
+#    start_time = time.time()
+#    NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
+#    out=NNUE.evaluate([['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']])
+#    print(out)
+#    print('done')
+#    print("--- %s seconds ---" % (time.time() - start_time))

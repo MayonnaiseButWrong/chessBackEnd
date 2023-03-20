@@ -112,11 +112,13 @@ def toFEN(ins):
     for j in range(8):
         for i in range(8):
             count=0
-            while count+1<8 and ins[j][i+count]=='MT': count+=1
+            while count+i<8 and ins[j][i+count]=='MT': count+=1
             if ins[j][i][0]=='B':out+=ins[j][i][1].lower()
             elif ins[j][i][0]=='W':out+=ins[j][i][1]
             if count>0:
                 i+=(count-1)
-                out+=count
+                out+=str(count)
+            if i>=7:
+                break
         out+='/'
-    return out[0,-1]
+    return out[0:-1]
