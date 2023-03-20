@@ -108,6 +108,15 @@ class NeuralNetwork():
             count+=1
         return array2
     
+    def __applySigmoidDerivative(self, ins):
+        array1,array2,count=ins,[],0
+        for row in array1:
+            array2.append([])
+            for element in row:
+                array2[count].append(self.__sigmoid_derivative(element))
+            count+=1
+        return array2
+    
     def __matrixmul(self,ins1,ins2):
         m1,m2=numpy.asmatrix(ins1),numpy.asmatrix(ins2)
         return numpy.matrix.getA(numpy.matmul(m1,m2))
@@ -118,7 +127,7 @@ class NeuralNetwork():
     
     def __matrixsub(self,ins1,ins2):
         for j in range(len(ins2)):
-            for i in range(len(ins2)):
+            for i in range(len(ins2[j])):
                 ins2[j][i]=-ins2[j][i]
         return self.__matrixadd(ins1,ins2)
     
@@ -213,8 +222,25 @@ class NeuralNetwork():
                 out='1'+out
         return out
     
-    def __backprop(self,listofweights,listofbaises,activations,example):#  C′(W)=(O−y)⋅R′(Z)⋅H         where C'(w) is the rate of change of the ocst function with respect to the weights, O is the output of the function, y in the expected value, R'(Z) is the sum of the previos layer's activation times their respective weights put into the derivitive of the sigmoid function, H is the previos layer's activation. explanaition: https://ml-cheatsheet.readthedocs.io/en/latest/backpropagation.html 
-        weights,baises,activation,activationchanges,activationchange,nextLayerExample,temp=self.__matrixtranspose(listofweights[-1]),listofbaises[-1],activations[-1],[],[],[],0    #  W=W-ΔW       ΔW=Error of layer infront * activation of current Layer * learning rate
+    def __backprop(self,weights,baises,activations,expected):#  C′(W)=(O−y)⋅R′(Z)⋅H         where C'(w) is the rate of change of the ocst function with respect to the weights, O is the output of the function, y in the expected value, R'(Z) is the sum of the previos layer's activation times their respective weights put into the derivitive of the sigmoid function, H is the previos layer's activation. explanaition: https://ml-cheatsheet.readthedocs.io/en/latest/backpropagation.html 
+        #  W=W-ΔW       ΔW=Error of layer infront * activation of previos Layer * learning rate
+        weights,baises,activations=weights[::-1],baises[::-1],activations[::-1]
+        observed,weight=activations[0],weights[0]
+        print(len(observed),len(expected))
+        error=self.__matrixsub(observed,expected)
+        Z0=self.__matrixmul(weights[0],activations[1])
+        E0=self.__matrixmeld(self.__applySigmoidDerivative(Z0),error )    
+        print(E0) 
+        deltaW=[self.__matrixmeld(E0, activations[1])]
+        for i in range(1,len(weights)):
+            prevweight=weight
+            weight,activation=weights[i],activations[i+1]
+            Z1=self.__matrixmul(weight,activation)
+            E1=self.__matrixmul(E0,self.__matrixmul(prevweight,self.__applySigmoidDerivative(self.__matrixtranspose(Z1))))
+            deltaW.append(self.__matrixmul(E1, activation))
+            E0,Z0=E1,Z1
+        for a in range(len(weights)):
+            print('weight',len(weight[a]),len(weight[a][0]),'deltaweight',len(deltaweight[a]),len(deltaweight[a][0]))
         #for number in example[0]:
         #    for j in range(len(weights)):
         #        for i in range(len(weights[j])):
@@ -248,12 +274,13 @@ class NeuralNetwork():
             weightchanges,baischanges=[],[]
             for example in self.training_examples:
                 activations=self.__testevaluate(example[0])
-                weightchange,baischange=self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
-                weightchanges.append(weightchange)
-                baischanges.append(baischange)
-            self.weights=self.__matrixmeld(weightchange,self.__findAverage(weightchanges))
-            self.baises=self.__matrixmeld(baischanges, self.__findAverage(baischanges))
-            self.__UpdateWeightsAndBaises(self.weights,self.baises)
+                self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
+                #weightchange,baischange=self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
+                #weightchanges.append(weightchange)
+                #baischanges.append(baischange)
+            #self.weights=self.__matrixmeld(weightchange,self.__findAverage(weightchanges))
+            #self.baises=self.__matrixmeld(baischanges, self.__findAverage(baischanges))
+            #self.__UpdateWeightsAndBaises(self.weights,self.baises)
             #translate the stockfish thing into something the nnue can understand
 
 

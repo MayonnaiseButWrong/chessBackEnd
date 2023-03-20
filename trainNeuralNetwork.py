@@ -48,10 +48,10 @@ def tomantissa(ins):
         exponent=len(ins)-6
         if exponent>14:
             exponent=twoscompliment(exponent)
-            return exponent+ins[-6:-1]
+            return exponent+ins[-7:-1]
         else:
             exponent=tobinary(exponent)
-            return exponent+ins[-6:-1]
+            return exponent+ins[-7:-1]
     else:
         return [0,0,0,0]+ins
     #fix this pls
@@ -115,7 +115,7 @@ if __name__=="__main__":
         #print(eval)
         #eval=format(eval['value'],numberofpoints(defaultLayout))
         #print(eval)
-    eval=format(2,numberofpoints(defaultLayout))
+    eval=format(22,numberofpoints(defaultLayout))
     print(eval)
     NNUE.train([defaultLayout,eval])
     print('here')
