@@ -7,6 +7,7 @@ class NeuralNetwork():
         fweights=open("Weights.txt","rt")
         fbaises=open("Baises.txt","rt")
         self.layers=layers
+        self.learning_rate = 1
         if len(str(fweights.read()))<1 or len(str(fbaises.read()))<1:
             self.weights=self.__createFileW(open("Weights.txt","wt"))
             self.baises=self.__createFileB(open("Baises.txt","wt"))
@@ -96,7 +97,7 @@ class NeuralNetwork():
         return 1.0 / (1.0 + exp(-x))
     
     def __sigmoid_derivative(self, x):
-        return x * (1.0 - x)
+        return x / (1.0 - x)
     
     def __applySigmoid(self, ins):
         array1,array2,count=ins,[],0
@@ -212,34 +213,34 @@ class NeuralNetwork():
                 out='1'+out
         return out
     
-    def __backprop(self,listofweights,listofbaises,activations,example):
-        weights,baises,activation,activationchanges,activationchange,nextLayerExample,temp=self.__matrixtranspose(listofweights[-1]),listofbaises[-1],activations[-1],[],[],[],0
-        for number in example[0]:
-            for j in range(len(weights)):
-                for i in range(len(weights[j])):
-                    print(len(activation),len(weights[j]),len(weights),i)
-                    error=(activation[i][0]-number)/activation[i][0]
-                    temp+=error*self.__sigmoid_derivative(number)*weights[j][i]
-                activationchange.append([temp])
-            print('here')
-            activationchanges.append(activationchange)
-            if len(nextLayerExample)>0:
-                nextLayerExample=self.__matrixadd(nextLayerExample,activationchange)
-            else:
-                nextLayerExample=activationchanges
-                
-        print(len(activations[-2][0]),len(activations[-2]),len(nextLayerExample),len(nextLayerExample[0]))
-        if len(activations)>2:
-            weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activations[-2],nextLayerExample)+example)
-            #weightchange,baischange=weightchanges[-1],baischanges[-1]
-        else:
-            weightchanges,baischanges=[],[]
-        
-        weightchange,baischange,activationchanges=activationchanges,[],nextLayerExample
-        baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activations[-2]),activations[-1])
-        weightchanges.append(weightchange)
-        baischanges.append(baischange)
-        return weightchanges,baischanges      
+    def __backprop(self,listofweights,listofbaises,activations,example):#  C′(W)=(O−y)⋅R′(Z)⋅H         where C'(w) is the rate of change of the ocst function with respect to the weights, O is the output of the function, y in the expected value, R'(Z) is the sum of the previos layer's activation times their respective weights put into the derivitive of the sigmoid function, H is the previos layer's activation. explanaition: https://ml-cheatsheet.readthedocs.io/en/latest/backpropagation.html 
+        weights,baises,activation,activationchanges,activationchange,nextLayerExample,temp=self.__matrixtranspose(listofweights[-1]),listofbaises[-1],activations[-1],[],[],[],0    #  W=W-ΔW       ΔW=Error of layer infront * activation of current Layer * learning rate
+        #for number in example[0]:
+        #    for j in range(len(weights)):
+        #        for i in range(len(weights[j])):
+        #            print(len(activation),len(weights[j]),len(weights),i)
+        #            error=(activation[i][0]-number)/activation[i][0]
+        #            temp+=error*self.__sigmoid_derivative(number)*weights[j][i]                                               <- possibly all wrong so....    redo it all
+        #        activationchange.append([temp])
+        #    print('here')
+        #    activationchanges.append(activationchange)
+        #    if len(nextLayerExample)>0:
+        #        nextLayerExample=self.__matrixadd(nextLayerExample,activationchange)
+        #    else:
+        #        nextLayerExample=activationchanges
+        #        
+        #print(len(activations[-2][0]),len(activations[-2]),len(nextLayerExample),len(nextLayerExample[0]))
+        #if len(activations)>2:
+        #    weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activations[-2],nextLayerExample)+example)
+        #    #weightchange,baischange=weightchanges[-1],baischanges[-1]
+        #else:
+        #    weightchanges,baischanges=[],[]
+        #
+        #weightchange,baischange,activationchanges=activationchanges,[],nextLayerExample
+        #baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activations[-2]),activations[-1])
+        #weightchanges.append(weightchange)
+        #baischanges.append(baischange)
+        #return weightchanges,baischanges      
             
     def train(self,data):
         self.training_examples.append(data)
