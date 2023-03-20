@@ -217,7 +217,7 @@ class NeuralNetwork():
         for number in example[0]:
             for j in range(len(weights)):
                 for i in range(len(weights[j])):
-                    #print(len(activation),len(weights[j]),len(weights),i)
+                    print(len(activation),len(weights[j]),len(weights),i)
                     error=(activation[i][0]-number)/activation[i][0]
                     temp+=error*self.__sigmoid_derivative(number)*weights[j][i]
                 activationchange.append([temp])
@@ -228,15 +228,15 @@ class NeuralNetwork():
             else:
                 nextLayerExample=activationchanges
                 
-        print(len(activation[-2][0]),len(activation[-2]))
+        print(len(activations[-2][0]),len(activations[-2]),len(nextLayerExample),len(nextLayerExample[0]))
         if len(activations)>2:
-            weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activation[-2],nextLayerExample)+example)
+            weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activations[-2],nextLayerExample)+example)
             #weightchange,baischange=weightchanges[-1],baischanges[-1]
         else:
             weightchanges,baischanges=[],[]
         
         weightchange,baischange,activationchanges=activationchanges,[],nextLayerExample
-        baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activation[-2]),activation[-1])
+        baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activations[-2]),activations[-1])
         weightchanges.append(weightchange)
         baischanges.append(baischange)
         return weightchanges,baischanges      

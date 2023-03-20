@@ -12,6 +12,8 @@ def updateStartingMoveEncyclopaedia(StartingLayout,listOfMoves):
             move=mirrorBoard(move)
             #if not found in online starting move databse
             #get best follow-up move from the starting move database
+            #https://sourceforge.net/p/scidvspc/code/HEAD/tree/scid.eco 
+            #its a text file so you have to translate the database before use, also you have to translate the thing that your searching for lol
             #DatabaseMove=to_xenonnumber(move)
             newBestMove=UseGenericTacticToGenerateMove(move,listOfMoves)
             newBestMove=to_xenonnumber(move)
