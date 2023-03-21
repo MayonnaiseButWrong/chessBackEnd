@@ -14,21 +14,17 @@ class NeuralNetwork():
             fbaises.truncate(0)
             self.weights=self.__createFileW(open("Weights.txt","wt"))
             self.baises=self.__createFileB(open("Baises.txt","wt"))
-            print('here')
         else:
             self.weights=self.__fileDecomposition(open("Weights.txt","rt"))
             self.baises=self.__fileDecomposition(open("Baises.txt","rt"))
             check=[len(self.weights[0][0])]
             for bais in self.baises:
                 check.append(len(bais))
-            print(check)
             if check!=self.layers:
-                print('wtf')
-                fweights.truncate(0)
+                fweights.truncate(0)        #if there is a mismatch between the dimensions of the weights and baises found in the file and the input dimensions it means that there is an error and all of the weights have ot be generated from scratch
                 fbaises.truncate(0)
                 self.weights=self.__createFileW(open("Weights.txt","wt"))
                 self.baises=self.__createFileB(open("Baises.txt","wt"))
-            print('there')
         self.training_examples=[]
         
     def __createFileW(self,f):
@@ -49,7 +45,6 @@ class NeuralNetwork():
                     array[-1].append(1.0)
             out+='1.0$'
             array[-1].append(1.0)
-            print(len(array))
             arrays.append(array)
             array=[]
         f.write(out)
@@ -74,14 +69,13 @@ class NeuralNetwork():
         for i in range(len(self.layers)-1):
             layer1=self.layers[i]
             layer2=self.layers[i+1]
-            print(layer1,layer2)
             for j in range(layer2-1):
                 for k in range(layer1-1):
-                    f.write('{:,f}'.format(float(l[i][j][k]))+',')
-                f.write('{:,f}'.format(float(l[i][j][k+1]))+';')
+                    f.write(f"{float(l[i][j][k]):.10f}".rstrip("0")+',')
+                f.write(f"{float(l[i][j][k+1]):.10f}".rstrip("0")+';')
             for m in range(layer1-1):
-                    f.write('{:,f}'.format(float(l[i][j][m]))+',')
-            f.write('{:,f}'.format(float(l[i][j][m+1]))+'$')
+                    f.write(f"{float(l[i][j][m]):.10f}".rstrip("0")+',')
+            f.write(f"{float(l[i][j][m+1]):.10f}".rstrip("0")+'$')
     
     def __UpdateFilesB(self,f,l):
         arrays,array=[],[]
@@ -89,8 +83,8 @@ class NeuralNetwork():
             layer1=self.layers[i]
             layer2=self.layers[i+1]
             for j in range(layer2-1):
-                f.write('{:,f}'.format(float(l[i][j]))+';')
-            f.write('{:,f}'.format(float(l[i][j+1]))+'$')
+                f.write(f"{float(l[i][j]):.10f}".rstrip("0")+';')
+            f.write(f"{float(l[i][j+1]):.10f}".rstrip("0")+'$')
     
     def __UpdateWeightsAndBaises(self,weightchange,baischange):
         open("Weights.txt","r+").truncate(0)
@@ -101,25 +95,29 @@ class NeuralNetwork():
     def __fileDecomposition(self, f):
         text=str(f.read())
         word,array,out=text[0],[[]],[]
-        for count in range(1,len(text)):
-            if text[count]==',':
-                array[-1].append(float(word))
-                word=''
-            elif text[count]==';':
-                array[-1].append(float(word))
-                word=''
-                array.append([])
-            elif text[count]=='$':
-                array[-1].append(float(word))
-                word=''
-                out.append(array)
-                array=[[]]
-            else:
-                word+=text[count]
-        return out
+        try:
+            for count in range(1,len(text)):
+                if text[count]==',':
+                    array[-1].append(float(word))
+                    word=''
+                elif text[count]==';':
+                    array[-1].append(float(word))
+                    word=''
+                    array.append([])
+                elif text[count]=='$':
+                    array[-1].append(float(word))
+                    word=''
+                    out.append(array)
+                    array=[[]]
+                else:
+                    word+=text[count]
+        except:
+            return []
+        else:
+            return out
         
     def __sigmoid(self, x):
-        return 1.0 / (1.0 + exp(-x))
+        return 1.0 / (1.0 + exp(-x,dtype='float64'))
     
     def __sigmoid_derivative(self, x):
         return x / (1.0 - x)
@@ -255,18 +253,15 @@ class NeuralNetwork():
         error=self.__matrixsub(observed,expected)
         Z=[self.__matrixmul(weights[0],activations[1])]
         E=[self.__matrixmeld(self.__applySigmoidDerivative(Z[0]),error)]
-        print('weights',len(weights[0]),len(weights[0][0]),'Z',len(Z[0]),len(Z[0][0]),'E',len(E[0]),len(E[0][0]))
         deltaW=[self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[1], self.__matrixtranspose(E[0]))))]
         
         for i in range(1,len(weights)-1):
             Z.append(self.__matrixmul(weights[i],activations[i+1]))
             E.append(self.__matrixmeld(self.__matrixmul(self.__matrixtranspose(weights[i-1]),E[-1]),self.__applySigmoidDerivative(Z[i])))
-            print('weights',len(weights[i]),len(weights[i][0]),'Z',len(Z[i]),len(Z[i][0]),'E',len(E[i]),len(E[i][0]))
             deltaW.append(self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[i+1], self.__matrixtranspose(E[i])))))
         
         Z.append(self.__matrixmul(weights[-1],activations[-1]))
         E.append(self.__matrixmeld(self.__matrixmul(self.__matrixtranspose(weights[-2]),E[-1]),self.__applySigmoidDerivative(Z[-1])))
-        print('weights',len(weights[-1]),len(weights[-1][0]),'Z',len(Z[-1]),len(Z[-1][0]),'E',len(E[-1]),len(E[-1][0]))
         deltaW.append(self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1])))))
         #the change in bais is equal to the error, or E, for each of the layers
         return deltaW[::-1],E[::-1]  
@@ -284,9 +279,7 @@ class NeuralNetwork():
             for i in range(len(avrWeightChanges)):
                 newweights.append(self.__matrixsub(self.weights[i],avrWeightChanges[i]))
                 newbaises.append(self.__matrixsub(self.baises[i],avrBaisChanges[i]))
-                print('newweights',len(newweights[i]),len(newweights[i][0]),'newbaises',len(newbaises[i]),len(newbaises[i][0]))
             self.weights,self.baises=newweights,newbaises
-            #print(len(self.baises),len(self.weights),len(avrWeightChanges),len(avrBaisChanges),len(newweights),len(newbaises))
             self.__UpdateWeightsAndBaises(self.weights,self.baises)
             return
 
