@@ -226,19 +226,22 @@ class NeuralNetwork():
         #  W=W-ΔW       ΔW=Error of layer infront * activation of previos Layer * learning rate
         weights,baises,activations=weights[::-1],baises[::-1],activations[::-1]
         observed,weight=activations[0],weights[0]
-        print(len(observed),len(expected))
         error=self.__matrixsub(observed,expected)
-        Z0=self.__matrixmul(weights[0],activations[1])
-        E0=self.__matrixmeld(self.__applySigmoidDerivative(Z0),error )    
-        print(E0) 
-        deltaW=[self.__matrixmeld(E0, activations[1])]
+        Z=[self.__matrixmul(weights[0],activations[1])]
+        print(len(Z[0]),len(Z[0][0]),len(error),len(error[0]))
+        E=[self.__matrixmeld(self.__applySigmoidDerivative(Z[0]),error)]
+        print(len(E[0]),len(E[0][0]))
+        deltaW=[self.__matrixmul(activations[1], self.__matrixtranspose(E[0]))]
+        print(len(deltaW[0]),len(deltaW[0][0]))
+        for i in range(1,len(weights)):
+            Z.append(self.__matrixmul(weights[i],activations[i+1]))
+            E.append(self.__matrixmeld(self.__matrixmul(weights[i-1],self.__applySigmoidDerivative(Z[i])),error))
+        return
         for i in range(1,len(weights)):
             prevweight=weight
             weight,activation=weights[i],activations[i+1]
-            Z1=self.__matrixmul(weight,activation)
-            E1=self.__matrixmul(E0,self.__matrixmul(prevweight,self.__applySigmoidDerivative(self.__matrixtranspose(Z1))))
-            deltaW.append(self.__matrixmul(E1, activation))
-            E0,Z0=E1,Z1
+            Z.append(self.__matrixmul(weight,activation))
+            E.append(self.__matrixmul(E[i-1],self.__matrixmul(prevweight,self.__applySigmoidDerivative(Z[i]))))
         for a in range(len(weights)):
             print('weight',len(weight[a]),len(weight[a][0]),'deltaweight',len(deltaweight[a]),len(deltaweight[a][0]))
         #for number in example[0]:
@@ -288,6 +291,7 @@ if __name__ =="__main__":
     start_time = time.time()
     NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
     out=NNUE.evaluate([['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']])
+    NNUE.train([[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']],[[0], [0], [0], [0], [0], [1], [1], [0], [0], [0]]])
     print(out)
     print('done')
     print("--- %s seconds ---" % (time.time() - start_time))
