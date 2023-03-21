@@ -237,14 +237,15 @@ class NeuralNetwork():
         for i in range(1,len(weights)-1):
             print(len(weights[i]),len(weights[i][0]),len(activations[i+1]),len(activations[i+1][0]))
             Z.append(self.__matrixmul(weights[i],activations[i+1]))
-            E.append(self.__matrixmeld(self.__matrixmul(weights[i-1],self.__applySigmoidDerivative(Z[i])),error))
+            E.append(self.__matrixmeld(self.__matrixmul(weights[i-1],self.__applySigmoidDerivative(Z[i])),E[-1]))
             deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[i+1], self.__matrixtranspose(E[i]))))
         Z.append(self.__matrixmul(weights[-1],activations[-1]))
-        E.append(self.__matrixmeld(self.__matrixmul(weights[-2],self.__applySigmoidDerivative(Z[-1])),error))
+        E.append(self.__matrixmeld(self.__matrixmul(weights[-2],self.__applySigmoidDerivative(Z[-1])),E[-1]))
         deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1]))))
         for a in range(len(weights)):
-            newweights=self.__matrixsub(weights[a], deltaW[a])
-            weights=newweights
+            print(len(weights[a]),len(weights[a][0]),len(deltaW[a]),len(deltaW[a][0])) 
+            #newweights=self.__matrixsub(weights[a], self.__matrixtranspose(deltaW[a]))
+        #weights=newweights
         return
         #for i in range(1,len(weights)):
         #    prevweight=weight
