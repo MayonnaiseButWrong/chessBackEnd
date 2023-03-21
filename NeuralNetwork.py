@@ -5,17 +5,29 @@ from numpy import exp, array, random, asmatrix, matmul, add
 
 class NeuralNetwork():
     def __init__(self,layers):
-        fweights=open("Weights.txt","rt")
-        fbaises=open("Baises.txt","rt")
+        fweights=open("Weights.txt","r+")
+        fbaises=open("Baises.txt","r+")
         self.layers=layers
         self.learning_rate = 1
         if len(str(fweights.read()))<1 or len(str(fbaises.read()))<1:
+            fweights.truncate(0)
+            fbaises.truncate(0)
             self.weights=self.__createFileW(open("Weights.txt","wt"))
             self.baises=self.__createFileB(open("Baises.txt","wt"))
             print('here')
         else:
             self.weights=self.__fileDecomposition(open("Weights.txt","rt"))
             self.baises=self.__fileDecomposition(open("Baises.txt","rt"))
+            check=[len(self.weights[0][0])]
+            for bais in self.baises:
+                check.append(len(bais))
+            print(check)
+            if check!=self.layers:
+                print('wtf')
+                fweights.truncate(0)
+                fbaises.truncate(0)
+                self.weights=self.__createFileW(open("Weights.txt","wt"))
+                self.baises=self.__createFileB(open("Baises.txt","wt"))
             print('there')
         self.training_examples=[]
         
@@ -53,26 +65,38 @@ class NeuralNetwork():
             out+='1.0$'
             array.append([1.0])
             arrays.append(array)
+            array=[]
         f.write(out)
         return arrays
     
-    def __UpdateFiles(self,f,l):
-        out,arrays,array='',[],[]
-        for i in range(len(layers)-1):
+    def __UpdateFilesW(self,f,l):
+        arrays,array=[],[]
+        for i in range(len(self.layers)-1):
+            layer1=self.layers[i]
+            layer2=self.layers[i+1]
+            print(layer1,layer2)
+            for j in range(layer2-1):
+                for k in range(layer1-1):
+                    f.write('{:,f}'.format(float(l[i][j][k]))+',')
+                f.write('{:,f}'.format(float(l[i][j][k+1]))+';')
+            for m in range(layer1-1):
+                    f.write('{:,f}'.format(float(l[i][j][m]))+',')
+            f.write('{:,f}'.format(float(l[i][j][m+1]))+'$')
+    
+    def __UpdateFilesB(self,f,l):
+        arrays,array=[],[]
+        for i in range(len(self.layers)-1):
             layer1=self.layers[i]
             layer2=self.layers[i+1]
             for j in range(layer2-1):
-                for k in range(layer1-1):
-                    out=out+str(l[k])+','
-                out+=out+str(l[k+1])+';'
-            for k in range(layer1-1):
-                    out=out+str(l[k])+','
-            out=out+str(l[k+1])+'$'
-        f.write(out)
+                f.write('{:,f}'.format(float(l[i][j]))+';')
+            f.write('{:,f}'.format(float(l[i][j+1]))+'$')
     
     def __UpdateWeightsAndBaises(self,weightchange,baischange):
-        self.__UpdateFiles(open("Weights.txt","wt"),weightchange)
-        self.__UpdateFiles(open("Baises.txt","wt"),baischange)
+        open("Weights.txt","r+").truncate(0)
+        open("Baises.txt","r+").truncate(0)
+        self.__UpdateFilesW(open("Weights.txt","at"),weightchange)
+        self.__UpdateFilesB(open("Baises.txt","at"),baischange)
         
     def __fileDecomposition(self, f):
         text=str(f.read())
@@ -227,80 +251,51 @@ class NeuralNetwork():
         #  W=W-ΔW       ΔW=Error of layer infront * activation of previos Layer * learning rate
         weights,baises,activations=weights[::-1],baises[::-1],activations[::-1]
         observed,weight=activations[0],weights[0]
+        
         error=self.__matrixsub(observed,expected)
         Z=[self.__matrixmul(weights[0],activations[1])]
-        print(len(Z[0]),len(Z[0][0]),len(error),len(error[0]))
         E=[self.__matrixmeld(self.__applySigmoidDerivative(Z[0]),error)]
-        print(len(E[0]),len(E[0][0]))
-        deltaW=[self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[1], self.__matrixtranspose(E[0])))]
-        print(len(deltaW[0]),len(deltaW[0][0]))
+        print('weights',len(weights[0]),len(weights[0][0]),'Z',len(Z[0]),len(Z[0][0]),'E',len(E[0]),len(E[0][0]))
+        deltaW=[self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[1], self.__matrixtranspose(E[0]))))]
+        
         for i in range(1,len(weights)-1):
-            print(len(weights[i]),len(weights[i][0]),len(activations[i+1]),len(activations[i+1][0]))
             Z.append(self.__matrixmul(weights[i],activations[i+1]))
-            E.append(self.__matrixmeld(self.__matrixmul(weights[i-1],self.__applySigmoidDerivative(Z[i])),E[-1]))
-            deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[i+1], self.__matrixtranspose(E[i]))))
+            E.append(self.__matrixmeld(self.__matrixmul(self.__matrixtranspose(weights[i-1]),E[-1]),self.__applySigmoidDerivative(Z[i])))
+            print('weights',len(weights[i]),len(weights[i][0]),'Z',len(Z[i]),len(Z[i][0]),'E',len(E[i]),len(E[i][0]))
+            deltaW.append(self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[i+1], self.__matrixtranspose(E[i])))))
+        
         Z.append(self.__matrixmul(weights[-1],activations[-1]))
-        E.append(self.__matrixmeld(self.__matrixmul(weights[-2],self.__applySigmoidDerivative(Z[-1])),E[-1]))
-        deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1]))))
-        for a in range(len(weights)):
-            print(len(weights[a]),len(weights[a][0]),len(deltaW[a]),len(deltaW[a][0])) 
-            #newweights=self.__matrixsub(weights[a], self.__matrixtranspose(deltaW[a]))
-        #weights=newweights
-        return
-        #for i in range(1,len(weights)):
-        #    prevweight=weight
-        #    weight,activation=weights[i],activations[i+1]
-        #    Z.append(self.__matrixmul(weight,activation))
-        #    E.append(self.__matrixmul(E[i-1],self.__matrixmul(prevweight,self.__applySigmoidDerivative(Z[i]))))
-        #for a in range(len(weights)):
-        #    print('weight',len(weight[a]),len(weight[a][0]),'deltaweight',len(deltaweight[a]),len(deltaweight[a][0]))
-        #for number in example[0]:
-        #    for j in range(len(weights)):
-        #        for i in range(len(weights[j])):
-        #            print(len(activation),len(weights[j]),len(weights),i)
-        #            error=(activation[i][0]-number)/activation[i][0]
-        #            temp+=error*self.__sigmoid_derivative(number)*weights[j][i]                                               <- possibly all wrong so....    redo it all
-        #        activationchange.append([temp])
-        #    print('here')
-        #    activationchanges.append(activationchange)
-        #    if len(nextLayerExample)>0:
-        #        nextLayerExample=self.__matrixadd(nextLayerExample,activationchange)
-        #    else:
-        #        nextLayerExample=activationchanges
-        #        
-        #print(len(activations[-2][0]),len(activations[-2]),len(nextLayerExample),len(nextLayerExample[0]))
-        #if len(activations)>2:
-        #    weightchanges,baischanges=self.__backprop(listofweights[0:-1],listofbaises[0:-1],activations[0:-1],self.__matrixmul(activations[-2],nextLayerExample)+example)
-        #    #weightchange,baischange=weightchanges[-1],baischanges[-1]
-        #else:
-        #    weightchanges,baischanges=[],[]
-        #
-        #weightchange,baischange,activationchanges=activationchanges,[],nextLayerExample
-        #baischange=self.__matrixsub(self.__matrixmul(self.__matrixmeld(weights,activationchanges),activations[-2]),activations[-1])
-        #weightchanges.append(weightchange)
-        #baischanges.append(baischange)
-        #return weightchanges,baischanges      
+        E.append(self.__matrixmeld(self.__matrixmul(self.__matrixtranspose(weights[-2]),E[-1]),self.__applySigmoidDerivative(Z[-1])))
+        print('weights',len(weights[-1]),len(weights[-1][0]),'Z',len(Z[-1]),len(Z[-1][0]),'E',len(E[-1]),len(E[-1][0]))
+        deltaW.append(self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1])))))
+        #the change in bais is equal to the error, or E, for each of the layers
+        return deltaW[::-1],E[::-1]  
             
     def train(self,data):
         self.training_examples.append(data)
-        if len(self.training_examples)>=1:
+        if len(self.training_examples)>=2:
             weightchanges,baischanges=[],[]
             for example in self.training_examples:
                 activations=self.__testevaluate(example[0])
-                self.__backprop(self.weights,self.baises,[self.__encode(example[0])]+activations,example[1])
-                #weightchange,baischange=self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
-                #weightchanges.append(weightchange)
-                #baischanges.append(baischange)
-            #self.weights=self.__matrixmeld(weightchange,self.__findAverage(weightchanges))
-            #self.baises=self.__matrixmeld(baischanges, self.__findAverage(baischanges))
-            #self.__UpdateWeightsAndBaises(self.weights,self.baises)
-            #translate the stockfish thing into something the nnue can understand
+                weightchange,baischange=self.__backprop(self.weights,self.baises,[self.__encode(example[0])]+activations,example[1])
+                weightchanges.append(weightchange)
+                baischanges.append(baischange)
+            avrWeightChanges,avrBaisChanges,newweights,newbaises=self.__findAverage(weightchanges),self.__findAverage(baischanges),[],[]
+            for i in range(len(avrWeightChanges)):
+                newweights.append(self.__matrixsub(self.weights[i],avrWeightChanges[i]))
+                newbaises.append(self.__matrixsub(self.baises[i],avrBaisChanges[i]))
+                print('newweights',len(newweights[i]),len(newweights[i][0]),'newbaises',len(newbaises[i]),len(newbaises[i][0]))
+            self.weights,self.baises=newweights,newbaises
+            #print(len(self.baises),len(self.weights),len(avrWeightChanges),len(avrBaisChanges),len(newweights),len(newbaises))
+            self.__UpdateWeightsAndBaises(self.weights,self.baises)
+            return
 
 
 if __name__ =="__main__":
     start_time = time.time()
     NNUE=NeuralNetwork([4*64,8*128,8*128,8*128,8*128,8*128,10])
     out=NNUE.evaluate([['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']])
+    NNUE.train([[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']],[[0], [0], [0], [0], [0], [1], [1], [0], [0], [0]]])
     NNUE.train([[['BR','BN','BB','BQ','BK','BB','BN','BR'],['BP','BP','BP','BP','BP','BP','BP','BP'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['MT','MT','MT','MT','MT','MT','MT','MT'],['WP','WP','WP','WP','WP','WP','WP','WP'],['WR','WN','WB','WQ','WK','WB','WN','WR']],[[0], [0], [0], [0], [0], [1], [1], [0], [0], [0]]])
     print(out)
     print('done')
