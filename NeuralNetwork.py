@@ -1,3 +1,4 @@
+
 import time
 import numpy
 from numpy import exp, array, random, asmatrix, matmul, add
@@ -118,11 +119,11 @@ class NeuralNetwork():
         return array2
     
     def __matrixmul(self,ins1,ins2):
-        m1,m2=numpy.asmatrix(ins1),numpy.asmatrix(ins2)
+        m1,m2=numpy.asmatrix(ins1, dtype='float64'),numpy.asmatrix(ins2, dtype='float64')
         return numpy.matrix.getA(numpy.matmul(m1,m2))
     
     def __matrixadd(self,ins1,ins2):
-        m1,m2=numpy.asmatrix(ins1),numpy.asmatrix(ins2)
+        m1,m2=numpy.asmatrix(ins1, dtype='float64'),numpy.asmatrix(ins2, dtype='float64')
         return numpy.matrix.getA(numpy.add(m1,m2))
     
     def __matrixsub(self,ins1,ins2):
@@ -140,7 +141,7 @@ class NeuralNetwork():
         return out
     
     def __matrixtranspose(self,ins):
-        m=numpy.asmatrix(ins)
+        m=numpy.asmatrix(ins, dtype='float64')
         return numpy.matrix.getA(numpy.matrix.transpose(m))
     
     def __reduce(self,ins):
@@ -231,19 +232,27 @@ class NeuralNetwork():
         print(len(Z[0]),len(Z[0][0]),len(error),len(error[0]))
         E=[self.__matrixmeld(self.__applySigmoidDerivative(Z[0]),error)]
         print(len(E[0]),len(E[0][0]))
-        deltaW=[self.__matrixmul(activations[1], self.__matrixtranspose(E[0]))]
+        deltaW=[self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[1], self.__matrixtranspose(E[0])))]
         print(len(deltaW[0]),len(deltaW[0][0]))
-        for i in range(1,len(weights)):
+        for i in range(1,len(weights)-1):
+            print(len(weights[i]),len(weights[i][0]),len(activations[i+1]),len(activations[i+1][0]))
             Z.append(self.__matrixmul(weights[i],activations[i+1]))
             E.append(self.__matrixmeld(self.__matrixmul(weights[i-1],self.__applySigmoidDerivative(Z[i])),error))
-        return
-        for i in range(1,len(weights)):
-            prevweight=weight
-            weight,activation=weights[i],activations[i+1]
-            Z.append(self.__matrixmul(weight,activation))
-            E.append(self.__matrixmul(E[i-1],self.__matrixmul(prevweight,self.__applySigmoidDerivative(Z[i]))))
+            deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[i+1], self.__matrixtranspose(E[i]))))
+        Z.append(self.__matrixmul(weights[-1],activations[-1]))
+        E.append(self.__matrixmeld(self.__matrixmul(weights[-2],self.__applySigmoidDerivative(Z[-1])),error))
+        deltaW.append(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1]))))
         for a in range(len(weights)):
-            print('weight',len(weight[a]),len(weight[a][0]),'deltaweight',len(deltaweight[a]),len(deltaweight[a][0]))
+            newweights=self.__matrixsub(weights[a], deltaW[a])
+            weights=newweights
+        return
+        #for i in range(1,len(weights)):
+        #    prevweight=weight
+        #    weight,activation=weights[i],activations[i+1]
+        #    Z.append(self.__matrixmul(weight,activation))
+        #    E.append(self.__matrixmul(E[i-1],self.__matrixmul(prevweight,self.__applySigmoidDerivative(Z[i]))))
+        #for a in range(len(weights)):
+        #    print('weight',len(weight[a]),len(weight[a][0]),'deltaweight',len(deltaweight[a]),len(deltaweight[a][0]))
         #for number in example[0]:
         #    for j in range(len(weights)):
         #        for i in range(len(weights[j])):
@@ -277,7 +286,7 @@ class NeuralNetwork():
             weightchanges,baischanges=[],[]
             for example in self.training_examples:
                 activations=self.__testevaluate(example[0])
-                self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
+                self.__backprop(self.weights,self.baises,[self.__encode(example[0])]+activations,example[1])
                 #weightchange,baischange=self.__backprop(self.weights,self.baises,example[0]+activations,example[1])
                 #weightchanges.append(weightchange)
                 #baischanges.append(baischange)
