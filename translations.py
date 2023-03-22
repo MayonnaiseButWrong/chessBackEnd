@@ -50,7 +50,7 @@ def toCoOrdinates(inputTuple):
     letters=['A','B','C','D','E','F','G','H']
     return letters[(inputTuple[0])]+str(8-inputTuple[1])
 
-def toTuple(inputString):
+def toTuple(InputCoOrdinates):
     letters=['A','B','C','D','E','F','G','H']
     return [int(letters.index(InputCoOrdinates[0])),8-int(InputCoOrdinates[1])]
 

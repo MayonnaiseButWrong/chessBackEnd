@@ -7,6 +7,9 @@ class NeuralNetwork():
         fweights=open("Weights.txt","r+")
         fbaises=open("Baises.txt","r+")
         self.layers=layers
+        self.maxexamples=50
+        self.weightchanges=[]
+        self.baischanges=[]
         self.learning_rate = 1
         if len(str(fweights.read()))<1 or len(str(fbaises.read()))<1:
             fweights.truncate(0)
@@ -24,7 +27,6 @@ class NeuralNetwork():
                 fbaises.truncate(0)
                 self.weights=self.__createFileW(open("Weights.txt","wt"))
                 self.baises=self.__createFileB(open("Baises.txt","wt"))
-        self.training_examples=[]
         
     def __createFileW(self,f):
         out,arrays,array='',[],[]
@@ -264,23 +266,21 @@ class NeuralNetwork():
         deltaW.append(self.__matrixtranspose(self.__matrixmulconst(self.learning_rate,self.__matrixmul(activations[-1], self.__matrixtranspose(E[-1])))))
         #the change in bais is equal to the error, or E, for each of the layers
         return deltaW[::-1],E[::-1]  
-            
-    def train(self,data):
-        self.training_examples.append(data)
-        if len(self.training_examples)>=50:
+    
+    def train(self,example):
+        activations=self.__testevaluate(example[0])
+        change=self.__backprop(self.weights,self.baises,[self.__encode(example[0])]+activations,example[1])
+        self.weightchanges.append(change[0])
+        self.baischanges.append(change[1])
+        if len(self.weightchanges)>=self.maxexamples:
             print('training in process.......')
-            weightchanges,baischanges=[],[]
-            for example in self.training_examples:
-                activations=self.__testevaluate(example[0])
-                weightchange,baischange=self.__backprop(self.weights,self.baises,[self.__encode(example[0])]+activations,example[1])
-                weightchanges.append(weightchange)
-                baischanges.append(baischange)
-            avrWeightChanges,avrBaisChanges,newweights,newbaises=self.__findAverage(weightchanges),self.__findAverage(baischanges),[],[]
+            avrWeightChanges,avrBaisChanges,newweights,newbaises=self.__findAverage(self.weightchanges),self.__findAverage(self.baischanges),[],[]
             for i in range(len(avrWeightChanges)):
                 newweights.append(self.__matrixsub(self.weights[i],avrWeightChanges[i]))
                 newbaises.append(self.__matrixsub(self.baises[i],avrBaisChanges[i]))
             self.weights,self.baises=newweights,newbaises
             self.__UpdateWeightsAndBaises(self.weights,self.baises)
+            self.weightchanges,self.baischanges=[],[]
             return
 
 

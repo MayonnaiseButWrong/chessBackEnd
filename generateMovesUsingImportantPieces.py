@@ -233,7 +233,7 @@ def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
                     if move[1] in checkList:    
                             checkMoves.append(move)
         moves=checkMoves
-        
+    print('output',moves)
     return moves
 
 def generateBoardLayout(move,boardLayout):

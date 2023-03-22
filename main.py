@@ -14,7 +14,10 @@ class game:
         self.listOfMoves=stringToList(listOfMoves)
     def DatabaseUpdate(self):
         updateDatabase(self.StartingLayout,self.listOfMoves)
-        
+
+#concurrent futures:     https://docs.python.org/3/library/concurrent.futures.html
+#multithreading:         https://www.geeksforgeeks.org/multithreading-python-set-1/
+
 #moveObject=move(StartingLayout,listOfMoves)
 #moveObject.returnMove()
 #del moveObject
