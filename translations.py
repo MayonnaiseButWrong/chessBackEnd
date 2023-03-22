@@ -110,14 +110,21 @@ def stringToList(inputString):
 def toFEN(ins):
     out=''
     for j in range(8):
+        Flag=False
         for i in range(8):
             count=0
             while count+i<8 and ins[j][i+count]=='MT': count+=1
-            if ins[j][i][0]=='B':out+=ins[j][i][1].lower()
-            elif ins[j][i][0]=='W':out+=ins[j][i][1]
+            if ins[j][i][0]=='B':
+                out+=ins[j][i][1].lower()
+                Flag=False
+            elif ins[j][i][0]=='W':
+                out+=ins[j][i][1]
+                Flag=False
             if count>0:
                 i+=(count-1)
-                out+=str(count)
+                if not Flag:
+                    out+=str(count)
+                    Flag=True
             if i>=7:
                 break
         out+='/'

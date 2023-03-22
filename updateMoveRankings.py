@@ -1,6 +1,6 @@
-from .createBoardLayout import createBoardLayout
-from .generateMovesUsingImportantPieces import UseGenericTacticToGenerateMove
-from .translations import *
+from createBoardLayout import createBoardLayout
+from UseGenericTacticToGenerateMove import UseGenericTacticToGenerateMove
+from translations import *
 
 def updateMoveRankings(StartingLayout,listOfMoves):
     for count in range(listOfMoves):

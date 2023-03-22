@@ -2,8 +2,10 @@ from findImportantPieces import findImportantPieces
 from generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
 from ratingBasedOnNeuralNetwork import ratingBasedOnNeuralNetwork
 
+maxDepth=12
+
 def rateMoveBasedOnWinProbability(boardLayout,depth):
-    p,q,pchange,qchange,maxDepth=0,0,0,0,50
+    p,q,pchange,qchange=0,0,0,0
     wImportantPieces1,bImportantPieces1=findImportantPieces(boardLayout)
     wmoves=generateMovesUsingImportantPieces(boardLayout, wImportantPieces1, bImportantPieces1)
     for wmove in wmoves:

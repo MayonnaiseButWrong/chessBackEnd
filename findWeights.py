@@ -33,6 +33,7 @@ def enPassantMoves(boardLayout,i,j):
 
 
 def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
+    VectorsOfPieces={'Q':[[[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],[[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[-9,0]],[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],],[[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],],[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],],[[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[-9,9],],[[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[9,-9],],[[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[-9,-9],]],'K':[[[1,0]],[[-1,0]],[[0,1]],[[-0,1]],[[1,1]],[[-1,1]],[[1,-1]],[[-1,-1]]],'B':[[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],],[[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[-9,9],],[[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[9,-9],],[[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[-9,-9],]],'R':[[[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],[[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[-9,0]],[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],],[[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],]],'N':[[[2,1]],[[1,2]],[[-2,1]],[[-1,2]],[[2,-1]],[[1,-2]],[[-1,-2]],[[-2,-1]]]}
     threatening=[]
     piece=boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]]
     if piece[1]=='P':
@@ -114,25 +115,26 @@ def whatPieceIsThisOneThreatening(boardLayout,SpecificPiecePosition):
                 threatening=threatening+whatPieceIsThisOneThreatening(temp,[SpecificPiecePosition[0],7])
                 
         threatening=threatening+enPassantMoves(boardLayout,SpecificPiecePosition[0],SpecificPiecePosition[1])
-                
-        threatening=threatening.sort()
-        for index in range(1,len(threatening)):
-            if threatening[index-1]==threatening[index]:
-                del threatening[index]
+        if len(threatening)>0:
+            threatening=threatening.sort()
+            for index in range(1,len(threatening)):
+                if threatening[index-1]==threatening[index]:
+                    del threatening[index]
     else:
-        moves=generateVectors(piece)
+        moves=VectorsOfPieces[piece[1]]
         for direction in moves:
             flag=False
             for vector in direction:
-                if not boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]=='MT':
-                    if boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]== (boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]][0]+'K'):
-                        continue
-                    if flag==False:
-                        previosCheckedPiece=boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]
-                        threatening.append([SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]])
-                        flag=True
-                    elif (not previosCheckedPiece[0]==piece[0]) and (boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='K'or boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='Q'):
-                        threatening.append([[SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]]])
+                if SpecificPiecePosition[1]+vector[1]<8 and SpecificPiecePosition[0]+vector[0]<8 and SpecificPiecePosition[1]+vector[1]>=0 and SpecificPiecePosition[0]+vector[0]>=0:
+                    if not boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]=='MT':
+                        if boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]== (boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]][0]+'K'):
+                            continue
+                        if flag==False:
+                            previosCheckedPiece=boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]]
+                            threatening.append([SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]])
+                            flag=True
+                        elif (not previosCheckedPiece[0]==piece[0]) and (boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='K'or boardLayout[SpecificPiecePosition[1]+vector[1]][SpecificPiecePosition[0]+vector[0]][1]=='Q'):
+                            threatening.append([[SpecificPiecePosition[0]+vector[0],SpecificPiecePosition[1]+vector[1]]])
 
     if boardLayout[SpecificPiecePosition[1]][SpecificPiecePosition[0]]=='WR' and (SpecificPiecePosition==[0,7] or SpecificPiecePosition==[7,7]) and boardLayout[7][5]=='WK':
         temp=boardLayout
@@ -163,6 +165,6 @@ def findWeights(boardLayout,specificPiece,weights):
     for piece in threatening:
         if weights[piece[1]][piece[0]]=='MT':
             weight=findWeights(boardLayout, piece, weights)
-        weightofPiece+=weight[piece[1]][piece[0]]
-    weight[specificPiece[1]][specificPiece[0]]=weightofPiece
+            weightofPiece+=weight[piece[1]][piece[0]]
+    weights[specificPiece[1]][specificPiece[0]]=weightofPiece
     return weights

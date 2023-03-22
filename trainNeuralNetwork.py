@@ -1,14 +1,20 @@
+import time
+import sys
 from createBoardLayout import createBoardLayout
 from stockfish import Stockfish
 from translations import *
 from ratingBasedOnNeuralNetwork import NNUE
+from findImportantPieces import findImportantPieces
+from generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
 
 #finding a way to constantly generate a dataset was out of the scope of this project, so i am just assuming that whatever stockish says is the best possible move and using that to train my own NNUE
-#stockfish=Stockfish('stockfish.exe')
+stockfish=Stockfish('stockfish.exe')
 
+maxDepth=12
 
 def tobinary(ins):
     out=[]
+    print(ins)
     if ins<1:
         while ins<1:
             ins=ins*2
@@ -56,47 +62,38 @@ def tomantissa(ins):
         return [0,0,0,0]+ins
     #fix this pls
     
-def format(ins,n):
+def format(ins):
     out=[]
     if ins<0:
-        a=tomantissa((float(n+int(ins))/n))
+        a=tomantissa((float(100+int(ins))/100))
     else:
-        a=tomantissa(float(int(ins)/n))
+        a=tomantissa(float(int(ins)/100))
     for b in a:
         out.append([b])
     return out
-        
-def numberofpoints(ins):
-    points,t={'B':3,'N':3,'Q':9,'K':0,'R':4,'P':1,'T':0},0
-    for j in range(8):
-        for i in range(8):
-            t+=points[ins[j][i][1]]
-    return t
 
 def comparingProbabilities(boardLayout,depth):
-    maxDepth=5
+    print('depth',depth)
     wImportantPieces1,bImportantPieces1=findImportantPieces(boardLayout)
     wmoves=generateMovesUsingImportantPieces(boardLayout, wImportantPieces1, bImportantPieces1)
     for wmove in wmoves:
         wImportantPieces2,bImportantPieces2=findImportantPieces(wmove)
         bmoves=generateMovesUsingImportantPieces(wmove, bImportantPieces2, wImportantPieces2)
-        if len(bmoves)>0:
+        if len(bmoves)<=0:
             continue
         else:
             for bmove in bmoves:
-                wImportantPieces3,bImportantPieces3=findImportantPieces(wmove)
-                checkMoves=generateMovesUsingImportantPieces(bmove, wImportantPieces3, bImportantPieces3)
-                if len(checkMoves)>0:
-                    continue
+                print('here 2 electric boogaloo',depth)
+                print(toFEN(bmove)+' b - - 0 1',stockfish.is_fen_valid(toFEN(bmove)+' b - - 0 1'))
+                stockfish.set_fen_position(toFEN(bmove)+' b - - 0 1')
+                eval=stockfish.get_evaluation()
+                print(eval)
+                eval=format(eval['value'])
+                print('here',depth)
+                NNUE.train([bmove,eval])
                 if depth<maxDepth:
                     depth+=1
-                    rateMoveBasedOnWinProbability(bmove, depth)
-                else:
-                    stockfish.set_fen_position(toFEN(bmove)+' b - - 0 1')
-                    eval=stockfish.get_evaluation()
-                    print(eval)
-                    #eval=format(eval['value'],numberofpoints(bmove))
-                    #NNUE.train([bmove,eval])
+                    comparingProbabilities(bmove, depth)
                     
 def trainNeuralNetwork(StartingLayout,listOfMoves):
     for count in range(listOfMoves):
@@ -115,7 +112,14 @@ if __name__=="__main__":
         #print(eval)
         #eval=format(eval['value'],numberofpoints(defaultLayout))
         #print(eval)
-    eval=format(22,numberofpoints(defaultLayout))
-    print(eval)
-    NNUE.train([defaultLayout,eval])
-    print('here')
+    #eval=format(22,numberofpoints(defaultLayout))
+    #print(eval)
+    #NNUE.train([defaultLayout,eval])
+    #print('here')
+    start_time = time.time()
+    print(sys.getrecursionlimit())
+    #sys.setrecursionlimit(3000)
+    #print(sys.getrecursionlimit())
+    comparingProbabilities(defaultLayout, 1)
+    print('done')
+    print("--- %s seconds ---" % (time.time() - start_time))

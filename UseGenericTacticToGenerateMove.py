@@ -1,5 +1,5 @@
-from .findImportantPieces import findImportantPieces,bubbleSort
-from .generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
+from findImportantPieces import findImportantPieces,bubbleSort
+from generateMovesUsingImportantPieces import generateMovesUsingImportantPieces
 
 def typeOfMove(layout1,layout2):    #0 is a mormal move, 1 is castling, 2 is enpassant
     if layout1[0][4]=='K' and layout2[0][4]=='MT':

@@ -1,9 +1,8 @@
 from createBoardLayout import *
-
-def opponentMoves(boardLayout,importantPieces):
+VectorsOfPieces={'Q':[[[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],[[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[-9,0]],[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],],[[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],],[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],],[[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[-9,9],],[[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[9,-9],],[[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[-9,-9],]],'K':[[[1,0]],[[-1,0]],[[0,1]],[[-0,1]],[[1,1]],[[-1,1]],[[1,-1]],[[-1,-1]]],'B':[[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],],[[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[-9,9],],[[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[9,-9],],[[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[-9,-9],]],'R':[[[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0]],[[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[-9,0]],[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],],[[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8],[0,-9],]],'N':[[[2,1]],[[1,2]],[[-2,1]],[[-1,2]],[[2,-1]],[[1,-2]],[[-1,-2]],[[-2,-1]]]}
+def generateOpponentMoves(boardLayout,importantPieces):
     moves=[]
     for piece in importantPieces:
-        vectors=generateVectors(boardLayout[piece[1]][piece[0]])
         if boardLayout[piece[1]][piece[0]][1]=='K':
             continue
         if boardLayout[piece[1]][piece[0]][1]=='P':
@@ -11,6 +10,7 @@ def opponentMoves(boardLayout,importantPieces):
                 moves.append(piece,[piece[0]+1,piece[1]+1])
                 moves.append(piece,[piece[0]-1,piece[1]+1])
         else:
+            vectors=VectorsOfPieces[boardLayout[piece[1]][piece[0]][1]]
             for direction in vectors:
                 for vector in direction:
                     if (piece[0]+vector[0])>=0 and (piece[0]+vector[0])<8 and (piece[1]+vector[1])>=0 and (piece[1]+vector[1])<8:
@@ -89,29 +89,31 @@ def castling(boardLayout,i,j,opponentMoves):
 def pawnMoves(boardLayout,i,j):
     moves=[]
     if boardLayout[j][i][0]=='B':
-        if j<6:
-            if boardLayout[j+1][i]=='MT':
-                moves.append([[i,j],[i,j+1]])
-            if boardLayout[j+1][i+1][0]=='W':
-                moves.append([[i,j],[i+1,j+1]])
-            if boardLayout[j+1][i-1][0]=='W':
-                moves.append([[i,j],[i-1,j+1]])
-        if j==1:
-            if boardLayout[2][i]=='MT':
-                if boardLayout[3][i]=='MT' or boardLayout[3][i][0]=='W':
-                    moves.append([[i,j],[i,3]])
+        if i>0 and i<7:
+            if j<6:
+                if boardLayout[j+1][i]=='MT':
+                    moves.append([[i,j],[i,j+1]])
+                if boardLayout[j+1][i+1][0]=='W':
+                    moves.append([[i,j],[i+1,j+1]])
+                if boardLayout[j+1][i-1][0]=='W':
+                    moves.append([[i,j],[i-1,j+1]])
+            if j==1:
+                if boardLayout[2][i]=='MT':
+                    if boardLayout[3][i]=='MT' or boardLayout[3][i][0]=='W':
+                        moves.append([[i,j],[i,3]])
     else:
-        if j>1:
-            if boardLayout[j-1][i]=='MT':
-                moves.append([[i,j],[i,j-1]])
-            if boardLayout[j-1][i+1][0]=='B':
-                moves.append([[i,j],[i+1,j-1]])
-            if boardLayout[j-1][i-1][0]=='B':
-                moves.append([[i,j],[i-1,j-1]])
-        if j==6:
-            if boardLayout[5][i]=='MT':
-                if boardLayout[4][i]=='MT' or boardLayout[4][i][0]=='B':
-                    moves.append([[i,j],[i,4]])
+        if i>0 and i<7:
+            if j>1:
+                if boardLayout[j-1][i]=='MT':
+                    moves.append([[i,j],[i,j-1]])
+                if boardLayout[j-1][i+1][0]=='B':
+                    moves.append([[i,j],[i+1,j-1]])
+                if boardLayout[j-1][i-1][0]=='B':
+                    moves.append([[i,j],[i-1,j-1]])
+            if j==6:
+                if boardLayout[5][i]=='MT':
+                    if boardLayout[4][i]=='MT' or boardLayout[4][i][0]=='B':
+                        moves.append([[i,j],[i,4]])
     moves=moves+enPassantMoves(boardLayout,i,j)
     return moves
 
@@ -135,7 +137,7 @@ def isCheckList(i,j,boardLayout,opponentMoves):
     squares=[]
     for move in opponentMoves:
         if move[1]==[i,j]:
-            vectors=generateVectors(boardLayout[move[0][1]][move[0][0]])
+            vectors=VectorsOfPieces[boardLayout[move[0][1]][move[0][0]]]
             for vector in vectors:
                 if [move[0],[move[0][0]+vector[0],move[0][1]+vector[1]]] in opponentMoves:
                     squares.append([move[0][0]+vector[0],move[0][1]+vector[1]])
@@ -149,10 +151,10 @@ def isCheckUsingVectors(kingI,kingJ,pieceI,pieceJ,boardLayout):
         elif vector[0]>0:
             modulus=vector[0]
         elif vector[1]<0:
-            modulus=vector[1]
+            modulus=-vector[1]
         else:
             modulus=vector[1]
-        unitVector=[vector[0]/modulus,vector[1]/modulus]
+        unitVector=[vector[0]//modulus,vector[1]//modulus]
         for modulus in range(10):
             if pieceI+modulus*unitVector[0]>=0 and pieceI+modulus*unitVector[0]<8 and pieceJ+modulus*unitVector[1]>=0 and pieceJ+modulus*unitVector[1]<8:
                 if not boardLayout[pieceJ+modulus*unitVector[1]][pieceI+modulus*unitVector[0]][0]==boardLayout[pieceJ][pieceJ]:
@@ -162,7 +164,7 @@ def isCheckUsingVectors(kingI,kingJ,pieceI,pieceJ,boardLayout):
         
 def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
     moves=[]
-    opponentMoves=opponentMoves(boardLayout,opponentImportantPieces)
+    opponentMoves=generateOpponentMoves(boardLayout,opponentImportantPieces)
     
     found=False
     for j in range(8):
@@ -175,13 +177,13 @@ def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
                 break
             
     for piece in importantPieces:
-        vectors=generateVectors(boardLayout[piece[1]][piece[0]])
         if boardLayout[piece[1]][piece[0]][1]=='P':
             moves=moves+pawnMoves(boardLayout,piece[0],piece[1])
         elif boardLayout[piece[1]][piece[0]][1]=='K':
             moves=moves+kingMoves(piece[0],piece[1],opponentMoves)
         elif boardLayout[piece[1]][piece[0]][1]=='R':
             moves=moves+castling(boardLayout,piece[0],piece[1],opponentMoves)
+            vectors=VectorsOfPieces[boardLayout[piece[1]][piece[0]][1]]
             for direction in vectors:
                 for vector in direction:
                     if (piece[0]+vector[0])>=0 and (piece[0]+vector[0])<8 and (piece[1]+vector[1])>=0 and (piece[1]+vector[1])<8:
@@ -193,6 +195,7 @@ def generateMoves(boardLayout,importantPieces,opponentImportantPieces):
                             else:
                                 break
         else:
+            vectors=VectorsOfPieces[boardLayout[piece[1]][piece[0]][1]]
             for direction in vectors:
                 for vector in direction:
                     if (piece[0]+vector[0])>=0 and (piece[0]+vector[0])<8 and (piece[1]+vector[1])>=0 and (piece[1]+vector[1])<8:
@@ -255,5 +258,5 @@ def generateMovesUsingImportantPieces(boardLayout,importantPieces,opponentImport
     if len(moves)>0:
         for move in moves:
             newLayout=generateBoardLayout(move,boardLayout)
-            outptList.append(newLayout)
+            outputList.append(newLayout)
     return outputList

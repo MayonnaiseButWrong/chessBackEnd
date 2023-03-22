@@ -1,5 +1,5 @@
-from .UseGenericTacticToGenerateMove import UseGenericTacticToGenerateMove
-from .createBoardLayout import createBoardLayout
+from UseGenericTacticToGenerateMove import UseGenericTacticToGenerateMove
+from createBoardLayout import createBoardLayout
 
 def useStartingMoveEncyclopediaToGenerateResponseMove(listOfMoves,StartingLayout):
     print('rwbgmomk')
